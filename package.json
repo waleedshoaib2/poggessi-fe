@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "npm run dev --prefix pogessi-usa-frontend",
+    "build": "npm run build --prefix pogessi-usa-frontend",
+    "start": "npm run start --prefix pogessi-usa-frontend",
+    "lint": "npm run lint --prefix pogessi-usa-frontend"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.5"
+  }
+}
