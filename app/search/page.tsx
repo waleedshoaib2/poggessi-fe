@@ -79,6 +79,9 @@ const SearchContent: React.FC = () => {
       const reader = new FileReader()
       reader.onloadend = () => {
         setSelectedImage(reader.result as string)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
       }
       reader.readAsDataURL(file)
     }
@@ -358,7 +361,14 @@ const SearchContent: React.FC = () => {
             </Box>
           )}
 
-          <input type="file" hidden ref={fileInputRef} accept="image/*" onChange={handleFileSelect} />
+          <input
+            type="file"
+            hidden
+            ref={fileInputRef}
+            accept="image/*"
+            onChange={handleFileSelect}
+            onClick={(e) => ((e.target as HTMLInputElement).value = '')}
+          />
 
           <TextField
             fullWidth
@@ -517,7 +527,14 @@ const SearchContent: React.FC = () => {
               </Box>
             )}
 
-            <input type="file" hidden ref={fileInputRef} accept="image/*" onChange={handleFileSelect} />
+            <input
+              type="file"
+              hidden
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={handleFileSelect}
+              onClick={(e) => ((e.target as HTMLInputElement).value = '')}
+            />
 
             <TextField
               fullWidth
