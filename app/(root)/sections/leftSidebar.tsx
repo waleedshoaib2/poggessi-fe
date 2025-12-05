@@ -1,29 +1,28 @@
-"use client";
-import { Paper, Box, Typography, Slider, Stack, IconButton } from '@mui/material';
+'use client'
+import { Paper, Box, Typography, Slider, Stack, IconButton } from '@mui/material'
 // import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 // import ViewSidebarOutlinedIcon from '@mui/icons-material/ViewSidebarOutlined';
 
 const LeftSidebar = ({
-  numResults, 
-  setNumResults, 
-  confidence, 
-  setConfidence,
-  // onClose
-}: {
-  numResults: number;
-  setNumResults: (numResults: number) => void;
-  confidence: number;
-  setConfidence: (confidence: number) => void;
-  onClose?: () => void;
+  numResults,
+  setNumResults,
+  confidence,
+  setConfidence
+}: // onClose
+{
+  numResults: number
+  setNumResults: (numResults: number) => void
+  confidence: number
+  setConfidence: (confidence: number) => void
+  onClose?: () => void
 }) => {
-
   const handleNumResultsChange = (event: Event, newValue: number | number[]) => {
-    setNumResults(newValue as number);
-  };
+    setNumResults(newValue as number)
+  }
 
   const handleConfidenceChange = (event: Event, newValue: number | number[]) => {
-    setConfidence(newValue as number);
-  };
+    setConfidence(newValue as number)
+  }
 
   return (
     <Paper
@@ -38,7 +37,7 @@ const LeftSidebar = ({
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         backdropFilter: 'blur(10px)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
-        color: 'white',
+        color: 'white'
       }}
     >
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
@@ -68,7 +67,7 @@ const LeftSidebar = ({
             color: '#90caf9',
             height: 8,
             '& .MuiSlider-track': {
-              border: 'none',
+              border: 'none'
             },
             '& .MuiSlider-thumb': {
               height: 24,
@@ -76,11 +75,11 @@ const LeftSidebar = ({
               backgroundColor: '#fff',
               border: '2px solid currentColor',
               '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
-                boxShadow: 'inherit',
+                boxShadow: 'inherit'
               },
               '&:before': {
-                display: 'none',
-              },
+                display: 'none'
+              }
             },
             '& .MuiSlider-valueLabel': {
               lineHeight: 1.2,
@@ -96,19 +95,19 @@ const LeftSidebar = ({
               transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
               '&:before': { display: 'none' },
               '&.MuiSlider-valueLabelOpen': {
-                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)'
               },
               '& > *': {
-                transform: 'rotate(45deg)',
-              },
-            },
+                transform: 'rotate(45deg)'
+              }
+            }
           }}
         />
       </Box>
 
       <Box>
         <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
-          Confidence Threshold 
+          Confidence Threshold
         </Typography>
         <Slider
           value={confidence}
@@ -121,7 +120,7 @@ const LeftSidebar = ({
             color: '#90caf9',
             height: 8,
             '& .MuiSlider-track': {
-              border: 'none',
+              border: 'none'
             },
             '& .MuiSlider-thumb': {
               height: 24,
@@ -129,11 +128,11 @@ const LeftSidebar = ({
               backgroundColor: '#fff',
               border: '2px solid currentColor',
               '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
-                boxShadow: 'inherit',
+                boxShadow: 'inherit'
               },
               '&:before': {
-                display: 'none',
-              },
+                display: 'none'
+              }
             },
             '& .MuiSlider-valueLabel': {
               lineHeight: 1.2,
@@ -149,17 +148,17 @@ const LeftSidebar = ({
               transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
               '&:before': { display: 'none' },
               '&.MuiSlider-valueLabelOpen': {
-                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)'
               },
               '& > *': {
-                transform: 'rotate(45deg)',
-              },
-            },
+                transform: 'rotate(45deg)'
+              }
+            }
           }}
         />
       </Box>
     </Paper>
-  );
-};
+  )
+}
 
-export default LeftSidebar;
+export default LeftSidebar

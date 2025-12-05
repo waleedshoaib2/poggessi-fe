@@ -1,89 +1,82 @@
-"use client";
+'use client'
 
-import { AppBar, Box, Toolbar, Typography, Button, useTheme, IconButton, Popover, Tooltip } from "@mui/material";
-import Link from "next/link";
-import { MAIN_GRADIENT } from "../libs/mui/theme/palette";
-import Image from "next/image";
-import { Suspense, useEffect, useState } from "react";
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import LeftSidebar from "./sections/leftSidebar";
+import { AppBar, Box, Toolbar, Typography, Button, useTheme, IconButton, Popover, Tooltip } from '@mui/material'
+import Link from 'next/link'
+import { MAIN_GRADIENT } from '../libs/mui/theme/palette'
+import Image from 'next/image'
+import { Suspense, useEffect, useState } from 'react'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+import LeftSidebar from './sections/leftSidebar'
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from 'next/navigation'
 
-function MainLayoutContent({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [height, setHeight] = useState(0);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [numResults, setNumResults] = useState(3);
-  const [confidence, setConfidence] = useState(0.3);
-    const router = useRouter();
-  const searchParams = useSearchParams();
+function MainLayoutContent({ children }: { children: React.ReactNode }) {
+  const [height, setHeight] = useState(0)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const [numResults, setNumResults] = useState(3)
+  const [confidence, setConfidence] = useState(0.3)
+  const router = useRouter()
+  const searchParams = useSearchParams()
   useEffect(() => {
     // Set initial height
-    setHeight(window.innerHeight);
+    setHeight(window.innerHeight)
 
     // Update on resize
     const handleResize = () => {
-      setHeight(window.innerHeight);
-    };
+      setHeight(window.innerHeight)
+    }
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener('resize', handleResize)
+
     // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl)
   // const toolbarHeight = theme.mixins.toolbar;
-   const handleNumResultsChange = (value: number) => {
-    setNumResults(value);
-    updateURL('top_k', value.toString());
-  };
+  const handleNumResultsChange = (value: number) => {
+    setNumResults(value)
+    updateURL('top_k', value.toString())
+  }
 
   const handleConfidenceChange = (value: number) => {
-    setConfidence(value);
-    updateURL('conf_t', value.toString());
-  };
+    setConfidence(value)
+    updateURL('conf_t', value.toString())
+  }
 
   const updateURL = (param: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(param, value);
-    router.push(`?${params.toString()}`);
-  };
-
+    const params = new URLSearchParams(searchParams.toString())
+    params.set(param, value)
+    router.push(`?${params.toString()}`)
+  }
 
   return (
     <>
-      <AppBar position="static" sx={{
-        backgroundImage: MAIN_GRADIENT
-      }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+      <AppBar
+        position="static"
+        sx={{
+          backgroundImage: MAIN_GRADIENT
+        }}
+      >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
           {/* Empty box for left spacing to keep logo centered */}
           <Box sx={{ width: 48 }} />
-          
+
           {/* Centered Logo */}
-          <Image alt="" src={'/logo.png'} width={120} height={60}/>
-          
+          <Image alt="" src={'/logo.png'} width={120} height={60} />
+
           {/* Settings Icon on the right */}
           <Tooltip title="Settings">
-            <IconButton
-              color="inherit" 
-              aria-label="settings"
-              sx={{ color: 'white' }}
-           onClick={handleSettingsClick}
-          >
-            <SettingsOutlinedIcon />
-          </IconButton>
+            <IconButton color="inherit" aria-label="settings" sx={{ color: 'white' }} onClick={handleSettingsClick}>
+              <SettingsOutlinedIcon />
+            </IconButton>
           </Tooltip>
         </Toolbar>
       </AppBar>
@@ -94,22 +87,22 @@ function MainLayoutContent({
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
         sx={{
           '& .MuiPopover-paper': {
             backgroundColor: 'transparent',
             boxShadow: 'none',
-            mt: 1,
+            mt: 1
           }
         }}
       >
-        <LeftSidebar 
-         numResults={numResults}
+        <LeftSidebar
+          numResults={numResults}
           setNumResults={handleNumResultsChange}
           confidence={confidence}
           setConfidence={handleConfidenceChange}
@@ -117,8 +110,8 @@ function MainLayoutContent({
         />
       </Popover>
 
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           // height: '695px',
           height: `calc(${height}px - 95px)`,
           // Correct way to set background image
@@ -131,26 +124,22 @@ function MainLayoutContent({
           objectFit: 'cover',
           flexDirection: 'column',
           alignItems: 'center',
-           justifyContent: 'center',
+          justifyContent: 'center',
           overflow: 'auto',
           p: 3,
-          boxSizing: 'border-box',
+          boxSizing: 'border-box'
         }}
       >
         {children}
       </Box>
     </>
-  );
+  )
 }
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <MainLayoutContent>{children}</MainLayoutContent>
     </Suspense>
-  );
+  )
 }

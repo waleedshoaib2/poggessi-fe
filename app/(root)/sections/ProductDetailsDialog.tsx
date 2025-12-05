@@ -1,39 +1,22 @@
-"use client";
-import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Typography,
-  Box,
-  Grid,
-  Divider,
-  Stack,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import Image from 'next/image';
+'use client'
+import React from 'react'
+import { Dialog, DialogContent, DialogTitle, IconButton, Typography, Box, Grid, Divider, Stack } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import Image from 'next/image'
 
 interface ProductDetailsDialogProps {
-  open: boolean;
-  onClose: () => void;
-  product: any; // Using any to match the flexible metadata structure
+  open: boolean
+  onClose: () => void
+  product: any // Using any to match the flexible metadata structure
 }
 
-const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
-  open,
-  onClose,
-  product,
-}) => {
-  if (!product) return null;
+const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product }) => {
+  if (!product) return null
 
-  const { metadata, score } = product;
-  const imageUrl =
-    metadata.signed_urls && metadata.signed_urls.length > 0
-      ? metadata.signed_urls[0]
-      : '';
+  const { metadata, score } = product
+  const imageUrl = metadata.signed_urls && metadata.signed_urls.length > 0 ? metadata.signed_urls[0] : ''
 
-      console.log(product)
+  console.log(product)
   return (
     <Dialog
       open={open}
@@ -44,17 +27,17 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
         sx: {
           borderRadius: '16px',
           padding: '16px',
-          maxWidth: '800px',
-        },
+          maxWidth: '800px'
+        }
       }}
     >
       <DialogTitle sx={{ p: 0, mb: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
-          <Typography variant="h5" color="primary" fontWeight="bold">
+            <Typography variant="h5" color="primary" fontWeight="bold">
               {`Item No:  ${metadata.item_num}` || 'N/A'}
             </Typography>
-            <Typography variant="body1"  sx={{ mt: 0.5 }}>
+            <Typography variant="body1" sx={{ mt: 0.5 }}>
               Price: {metadata.exw_quotes_per_pc ? `$${parseFloat(metadata.exw_quotes_per_pc).toFixed(0)}` : 'N/A'}
             </Typography>
             <Typography variant="body1" color="text.secondary">
@@ -77,26 +60,20 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
             overflow: 'hidden',
             border: '2px solid #2196f3', // Blue border as seen in design
             mb: 3,
-            position: 'relative',
+            position: 'relative'
           }}
         >
           {imageUrl ? (
             <Box
-  sx={{
-    width: "100%",
-    height: "400px",
-    overflow: "auto", // scroll instead of crop
-    position: "relative",
-  }}
->
-  <Image
-    src={imageUrl}
-    alt={metadata.item_num}
-    fill
-    style={{ objectFit: "contain" }}
-  />
-</Box>
-
+              sx={{
+                width: '100%',
+                height: '400px',
+                overflow: 'auto', // scroll instead of crop
+                position: 'relative'
+              }}
+            >
+              <Image src={imageUrl} alt={metadata.item_num} fill style={{ objectFit: 'contain' }} />
+            </Box>
           ) : (
             <Box
               sx={{
@@ -105,7 +82,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
                 bgcolor: '#f5f5f5',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'center'
               }}
             >
               <Typography color="text.secondary">No Image Available</Typography>
@@ -118,7 +95,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
           sx={{
             border: '1px solid #e0e0e0',
             borderRadius: '12px',
-            p: 3,
+            p: 3
           }}
         >
           <Grid container spacing={3}>
@@ -143,7 +120,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
                 Dimensions:
               </Typography>
               <Typography variant="body1" fontWeight="medium">
-                {metadata.dims.split("1.")[0] || 'N/A'}
+                {metadata.dims.split('1.')[0] || 'N/A'}
               </Typography>
             </Grid>
 
@@ -173,8 +150,8 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
               </Typography>
             </Grid>
 
-             {/* Row 3 */}
-             <Grid size={{ xs: 12, sm: 4 }}>
+            {/* Row 3 */}
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="caption" color="text.secondary" display="block">
                 Sample Status:
               </Typography>
@@ -212,7 +189,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
         </Box>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ProductDetailsDialog;
+export default ProductDetailsDialog
