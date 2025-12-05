@@ -8,8 +8,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import SmartToyIcon from '@mui/icons-material/SmartToy'
 import PersonIcon from '@mui/icons-material/Person'
 import MainLayout from '../(root)/layout'
-import ProductDetailsDialog from '../(root)/sections/ProductDetailsDialog'
-import renderSearchResults from '../(root)/sections/results'
+import ProductDetailsDialog from '../(root)/components/ProductDetailsDialog'
+import renderSearchResults from '../(root)/components/results'
 import { useSearchParams } from 'next/navigation'
 
 interface SearchResult {

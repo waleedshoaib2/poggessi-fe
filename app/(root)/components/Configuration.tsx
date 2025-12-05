@@ -1,9 +1,6 @@
 'use client'
-import { Paper, Box, Typography, Slider, Stack, IconButton } from '@mui/material'
-// import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-// import ViewSidebarOutlinedIcon from '@mui/icons-material/ViewSidebarOutlined';
-
-const LeftSidebar = ({
+import { Paper, Box, Typography, Slider, Stack } from '@mui/material'
+const Configuration = ({
   numResults,
   setNumResults,
   confidence,
@@ -161,4 +158,4 @@ const LeftSidebar = ({
   )
 }
 
-export default LeftSidebar
+export default Configuration

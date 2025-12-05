@@ -1,13 +1,11 @@
 'use client'
 
-import { AppBar, Box, Toolbar, Typography, Button, useTheme, IconButton, Popover, Tooltip } from '@mui/material'
-import Link from 'next/link'
+import { AppBar, Box, Toolbar, IconButton, Popover, Tooltip } from '@mui/material'
 import { MAIN_GRADIENT } from '../libs/mui/theme/palette'
 import Image from 'next/image'
 import { Suspense, useEffect, useState } from 'react'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import LeftSidebar from './sections/leftSidebar'
-
+import Configuration from './components/Configuration'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
@@ -40,7 +38,6 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   const open = Boolean(anchorEl)
-  // const toolbarHeight = theme.mixins.toolbar;
   const handleNumResultsChange = (value: number) => {
     setNumResults(value)
     updateURL('top_k', value.toString())
@@ -66,13 +63,9 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
-          {/* Empty box for left spacing to keep logo centered */}
           <Box sx={{ width: 48 }} />
-
-          {/* Centered Logo */}
           <Image alt="" src={'/logo.png'} width={120} height={60} />
 
-          {/* Settings Icon on the right */}
           <Tooltip title="Settings">
             <IconButton color="inherit" aria-label="settings" sx={{ color: 'white' }} onClick={handleSettingsClick}>
               <SettingsOutlinedIcon />
@@ -101,7 +94,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
           }
         }}
       >
-        <LeftSidebar
+        <Configuration
           numResults={numResults}
           setNumResults={handleNumResultsChange}
           confidence={confidence}

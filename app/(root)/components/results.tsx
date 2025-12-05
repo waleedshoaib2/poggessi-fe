@@ -59,9 +59,10 @@ const renderSearchResults = (
                     image={result.metadata.signed_urls[0]}
                     alt={result.metadata.item_num}
                     sx={{
-                      objectFit: 'cover', // fills area like your example
+                      objectFit: 'contain', // Shows complete image without cropping
                       borderTopLeftRadius: 4,
-                      borderTopRightRadius: 4
+                      borderTopRightRadius: 4,
+                      backgroundColor: '#f5f5f5' // Optional: add background color for empty space
                     }}
                   />
                 )}
