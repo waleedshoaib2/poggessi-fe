@@ -128,6 +128,7 @@ function MainLayoutContent({
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed',
           display: 'flex',
+          objectFit: 'cover',
           flexDirection: 'column',
           alignItems: 'center',
            justifyContent: 'center',

@@ -123,7 +123,7 @@ const SearchContent: React.FC = () => {
         headers['Content-Type'] = 'application/json';
       }
 
-      const response = await fetch(`https://af304810f629.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`, {
+      const response = await fetch(`https://534543ca1206.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`, {
         method: 'POST',
         headers: headers,
         body: image ? formData : undefined
