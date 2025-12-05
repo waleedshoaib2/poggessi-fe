@@ -411,7 +411,7 @@ const SearchContent: React.FC = () => {
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
                     <IconButton
                       onClick={triggerFileSelect}
                       sx={{
@@ -434,6 +434,7 @@ const SearchContent: React.FC = () => {
                           backgroundColor: '#5b8ec4',
                           color: '#ffffff',
                           width: '40px',
+                          mr: 1,
                           height: '40px',
                           '&:hover': {
                             backgroundColor: '#4a7ab0'
@@ -577,7 +578,7 @@ const SearchContent: React.FC = () => {
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
                       <IconButton
                         onClick={triggerFileSelect}
                         sx={{
@@ -600,6 +601,7 @@ const SearchContent: React.FC = () => {
                             backgroundColor: '#5b8ec4',
                             color: '#ffffff',
                             width: '40px',
+                            mr: 1,
                             height: '40px',
                             '&:hover': {
                               backgroundColor: '#4a7ab0'
