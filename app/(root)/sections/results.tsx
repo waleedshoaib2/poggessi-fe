@@ -59,7 +59,7 @@ const renderSearchResults = (results: SearchResult[], setSelectedProduct: (produ
   <CardContent sx={{ flexGrow: 1 }}>
     <Typography gutterBottom variant="h6"
       sx={{ fontSize: "1rem", fontWeight: "bold" }}>
-      {result.metadata?.item_name ?? `Item ${index + 1}`}
+      {result.metadata?.item_name ?? `Item No: ${result.metadata.item_num}`}
     </Typography>
 
     <Typography variant="body2" sx={{ mb: 1 }}>
