@@ -371,7 +371,7 @@ const SearchContent: React.FC = () => {
             sx={{
               '& .MuiOutlinedInput-root': {
                 backgroundColor: '#ffffff',
-                borderRadius: '24px',
+                borderRadius: '30px',
                 paddingRight: '4px',
                 '& fieldset': {
                   border: 'none'
@@ -529,7 +529,7 @@ const SearchContent: React.FC = () => {
               sx={{
                 '& .MuiOutlinedInput-root': {
                   backgroundColor: '#ffffff',
-                  borderRadius: '24px',
+                  borderRadius: '30px',
                   paddingRight: '4px',
                   '& fieldset': {
                     border: 'none'
