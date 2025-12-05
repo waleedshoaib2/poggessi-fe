@@ -34,7 +34,7 @@ export default function LoginPage() {
           backdropFilter: 'blur(20px)',
       }}
     >
-      <Typography variant="h5" mb={3}>
+      <Typography variant="h5" color="white" mb={3}>
         Login
       </Typography>
 

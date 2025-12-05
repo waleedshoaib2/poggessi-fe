@@ -183,11 +183,6 @@ const SearchContent: React.FC = () => {
     }
   };
 
-  const handleProductClick = (product: SearchResult) => {
-    setSelectedProduct(product);
-    setIsDialogOpen(true);
-  };
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setSelectedProduct(null);
@@ -196,8 +191,7 @@ const SearchContent: React.FC = () => {
 
   return (
     <MainLayout>
- 
-          {/* <LeftSidebar numResults={numResults} setNumResults={setNumResults} confidence={confidence} setConfidence={setConfidence} /> */}
+
            {/* Messages Area */}
             {
               messages.length > 0 && (

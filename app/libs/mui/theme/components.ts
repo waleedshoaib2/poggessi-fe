@@ -1,10 +1,35 @@
 import { Components } from "@mui/material";
 import { Theme } from "@mui/system";
-// import { inter } from "./fonts";
-// import { MAIN_GRADIENT } from "./palette";
 
 const components: Components<Omit<Theme, "components">> = {
-  
+  MuiInputLabel: {
+    styleOverrides: {
+      root: {
+        color: 'white', // default label color
+        '&.Mui-focused': {
+          color: 'white', // color when focused
+        },
+        // '&.Mui-disabled': {
+        //   color: '#999999', // color when disabled
+        // },
+      },
+    },
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        // '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        //   borderColor: '#ff5722', // outline color when focused
+        // },
+        '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+          borderColor: 'red', // outline color when disabled
+        },
+      },
+      input: {
+        color: 'white', // text color
+      },
+    },
+  },
 };
+
 export default components;
-// MuiOutlinedInput-input Mui-disabled mui-1ss675d-MuiInputBase-input-MuiOutlinedInput-input
