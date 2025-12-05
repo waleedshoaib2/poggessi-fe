@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 interface SearchResult {
   id: string;

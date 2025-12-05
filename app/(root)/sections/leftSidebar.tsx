@@ -1,9 +1,21 @@
-
+"use client";
 import { Paper, Box, Typography, Slider, Stack, IconButton } from '@mui/material';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import ViewSidebarOutlinedIcon from '@mui/icons-material/ViewSidebarOutlined';
+// import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+// import ViewSidebarOutlinedIcon from '@mui/icons-material/ViewSidebarOutlined';
 
-const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {numResults: number, setNumResults: (numResults: number) => void, confidence: number, setConfidence: (confidence: number) => void}) => {
+const LeftSidebar = ({
+  numResults, 
+  setNumResults, 
+  confidence, 
+  setConfidence,
+  // onClose
+}: {
+  numResults: number;
+  setNumResults: (numResults: number) => void;
+  confidence: number;
+  setConfidence: (confidence: number) => void;
+  onClose?: () => void;
+}) => {
 
   const handleNumResultsChange = (event: Event, newValue: number | number[]) => {
     setNumResults(newValue as number);
@@ -17,7 +29,7 @@ const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {nu
     <Paper
       elevation={3}
       sx={{
-         minHeight: '45vh',
+        minHeight: '0vh',
         maxHeight: '65vh',
         display: 'flex',
         flexDirection: 'column',
@@ -29,22 +41,20 @@ const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {nu
         color: 'white',
       }}
     >
-      {/* Header */}
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={6}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <SettingsOutlinedIcon />
+          {/* <SettingsOutlinedIcon /> */}
           <Typography variant="h6" fontWeight="medium">
             Configuration
           </Typography>
         </Stack>
-        <IconButton sx={{ color: 'white' }}>
+        {/* <IconButton sx={{ color: 'white' }} onClick={onClose}>
             <ViewSidebarOutlinedIcon />
-        </IconButton>
+        </IconButton> */}
       </Stack>
 
-      {/* No. of Results Slider */}
-      <Box mb={6}>
-        <Typography variant="body2" gutterBottom sx={{ opacity: 0.9, mb: 2 }}>
+      <Box mb={2}>
+        <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
           No. of Results
         </Typography>
         <Slider
@@ -55,7 +65,7 @@ const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {nu
           step={1}
           valueLabelDisplay="on"
           sx={{
-            color: '#90caf9', // Light blue
+            color: '#90caf9',
             height: 8,
             '& .MuiSlider-track': {
               border: 'none',
@@ -96,10 +106,9 @@ const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {nu
         />
       </Box>
 
-      {/* Confidence Threshold Slider */}
       <Box>
-        <Typography variant="body2" gutterBottom sx={{ opacity: 0.9, mb: 2 }}>
-          Confidence Threshold
+        <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
+          Confidence Threshold 
         </Typography>
         <Slider
           value={confidence}
@@ -108,7 +117,7 @@ const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {nu
           max={1}
           step={0.1}
           valueLabelDisplay="on"
-           sx={{
+          sx={{
             color: '#90caf9',
             height: 8,
             '& .MuiSlider-track': {
@@ -126,7 +135,7 @@ const LeftSidebar = ({numResults, setNumResults, confidence, setConfidence}: {nu
                 display: 'none',
               },
             },
-             '& .MuiSlider-valueLabel': {
+            '& .MuiSlider-valueLabel': {
               lineHeight: 1.2,
               fontSize: 12,
               background: 'unset',

@@ -1,6 +1,6 @@
 'use client'
-import React, { useState, useRef, useEffect } from 'react';
-import { Box, TextField, IconButton, Paper, Typography, Avatar, CircularProgress, InputAdornment, Card, CardMedia, CardContent, Grid, Chip, Stack } from '@mui/material';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
+import { Box, TextField, IconButton, Paper, Typography, Avatar, CircularProgress, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SendIcon from '@mui/icons-material/Send';
@@ -8,9 +8,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import MainLayout from '../(root)/layout';
-import LeftSidebar from '../(root)/sections/leftSidebar';
 import ProductDetailsDialog from '../(root)/sections/ProductDetailsDialog';
 import renderSearchResults from '../(root)/sections/results';
+import { useSearchParams } from 'next/navigation';
 
 interface SearchResult {
   id: string;
@@ -40,11 +40,9 @@ interface Message {
   searchResults?: SearchResult[];
 }
 
-const SearchComponent: React.FC = () => {
+const SearchContent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
   ]);
-  const [numResults, setNumResults] = useState<number>(5);
-  const [confidence, setConfidence] = useState<number>(0.5);
   const [inputValue, setInputValue] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +50,11 @@ const SearchComponent: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+ const searchParams = useSearchParams();
+  
+  // Get individual params
+  const topK = searchParams.get('top_k'); // Returns string or null
+  const confT = searchParams.get('conf_t');
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -121,7 +123,7 @@ const SearchComponent: React.FC = () => {
         headers['Content-Type'] = 'application/json';
       }
 
-      const response = await fetch(`https://69115eb0810d.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${numResults}&conf_t=${confidence}`, {
+      const response = await fetch(`https://af304810f629.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`, {
         method: 'POST',
         headers: headers,
         body: image ? formData : undefined
@@ -194,51 +196,25 @@ const SearchComponent: React.FC = () => {
 
   return (
     <MainLayout>
-      <Grid container spacing={2} sx={{ py: 2, width: '100%', overflowY: 'hidden' }}>
-        <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-          <LeftSidebar numResults={numResults} setNumResults={setNumResults} confidence={confidence} setConfidence={setConfidence} />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 8, md: 9 }}  >
-          <Paper
-            elevation={3}
-            sx={{
-              width: '100%',
-              // maxWidth: '900px', // Removed to let Grid control width
-              // mt: 5, // Managed by Grid spacing
-              minHeight: '0vh',
-              maxHeight: '80vh',
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '32px 24px',
-              borderRadius: '16px',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            }}
-          >
-            <Box sx={{ marginBottom: '24px' }}>
-              <Typography
-                style={{
-                  color: '#ffffff',
-                  fontSize: '24px',
-                  fontWeight: 500,
-                  textAlign: 'center',
-                  margin: 0,
-                }}
-              >
-                Search
-              </Typography>
-            </Box>
-
-            {/* Messages Area */}
+ 
+          {/* <LeftSidebar numResults={numResults} setNumResults={setNumResults} confidence={confidence} setConfidence={setConfidence} /> */}
+           {/* Messages Area */}
             {
               messages.length > 0 && (
+               
                  <Box
               sx={{
                 flex: 1,
                 overflowY: 'auto',
                 display: 'flex',
+                width: '100%',
+                 padding: '32px 24px',
+              borderRadius: '16px',
+                maxWidth: '900px',
                 flexDirection: 'column',
+                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
                 gap: 3,
                 mb: 3,
                 pr: 1,
@@ -346,9 +322,174 @@ const SearchComponent: React.FC = () => {
               )}
               <div ref={messagesEndRef} />
             </Box>
+          
               )
             }
-           
+            {messages.length > 0  ? (
+               <Box sx={{ position: 'relative', width: '100%',
+              maxWidth: '900px', }}>
+              {selectedImage && (
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: -70, 
+                  left: 10, 
+                  zIndex: 10,
+                  bgcolor: 'rgba(255,255,255,0.9)',
+                  p: 0.5,
+                  borderRadius: 1,
+                  boxShadow: 1
+                }}>
+                  <Box
+                    component="img"
+                    src={selectedImage}
+                    alt="Preview"
+                    sx={{
+                      height: 60,
+                      width: 'auto',
+                      borderRadius: 1,
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={clearSelectedImage}
+                    sx={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      bgcolor: 'background.paper',
+                      border: '1px solid #ddd',
+                      '&:hover': { bgcolor: '#f5f5f5' },
+                      width: 20,
+                      height: 20,
+                    }}
+                  >
+
+                    <CloseIcon sx={{ fontSize: 14 }} />
+                  </IconButton>
+                </Box>
+              )}
+
+              <input
+                type="file"
+                hidden
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleFileSelect}
+              />
+
+              <TextField
+                fullWidth
+                placeholder="Search here.."
+                multiline
+                maxRows={4}
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: '#ffffff',
+                    borderRadius: '24px',
+                    paddingRight: '4px',
+                    '& fieldset': {
+                      border: 'none',
+                    },
+                    '&:hover fieldset': {
+                      border: 'none',
+                    },
+                    '&.Mui-focused fieldset': {
+                      border: 'none',
+                    },
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    padding: '8px px',
+                    fontSize: '15px',
+                    color: '#333',
+                    '&::placeholder': {
+                      color: '#999',
+                      opacity: 1,
+                    },
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: '#666', marginLeft: '8px' }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton
+                          onClick={triggerFileSelect}
+                          sx={{
+                            backgroundColor: '#5b8ec4',
+                            color: '#ffffff',
+                            width: '40px',
+                            height: '40px',
+                            '&:hover': {
+                              backgroundColor: '#4a7ab0',
+                            },
+                          }}
+                        >
+                          <CameraAltIcon sx={{ fontSize: '20px' }} />
+                        </IconButton>
+                        {inputValue.trim() && (
+                           <IconButton
+                            onClick={handleSendMessage}
+                            sx={{
+                              backgroundColor: '#5b8ec4',
+                              color: '#ffffff',
+                              width: '40px',
+                              height: '40px',
+                              '&:hover': {
+                                backgroundColor: '#4a7ab0',
+                              },
+                            }}
+                          >
+                            <SendIcon sx={{ fontSize: '20px' }} />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+            ): (
+
+          <Paper
+            elevation={3}
+            sx={{
+              width: '100%',
+              maxWidth: '900px', // Removed to let Grid control width
+              // mt: 5, // Managed by Grid spacing
+              minHeight: '0vh',
+              maxHeight: '70vh',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '32px 24px',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+            }}
+          >
+              {messages.length === 0 &&
+            <Box sx={{ marginBottom: '24px' }}>
+              <Typography
+                style={{
+                  color: '#ffffff',
+                  fontSize: '24px',
+                  fontWeight: 500,
+                  textAlign: 'center',
+                  margin: 0,
+                }}
+              >
+                Search
+              </Typography>
+            </Box>
+              }
+
 
             {/* Input Area */}
             <Box sx={{ position: 'relative', }}>
@@ -480,8 +621,9 @@ const SearchComponent: React.FC = () => {
               />
             </Box>
           </Paper>
-        </Grid>
-      </Grid>
+            )}
+
+
       <ProductDetailsDialog 
         open={isDialogOpen}
         onClose={handleCloseDialog}
@@ -491,4 +633,10 @@ const SearchComponent: React.FC = () => {
   );
 };
 
-export default SearchComponent;
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchContent />
+    </Suspense>
+  );
+}
