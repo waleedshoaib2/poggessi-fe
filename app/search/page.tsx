@@ -345,7 +345,7 @@ const SearchContent: React.FC = () => {
                 sx={{
                   position: 'absolute',
                   top: -8,
-                  right: -8,
+                  right: -12,
                   bgcolor: 'background.paper',
                   border: '1px solid #ddd',
                   '&:hover': { bgcolor: '#f5f5f5' },
@@ -396,7 +396,7 @@ const SearchContent: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: '#666', marginLeft: '8px' }} />
+                  <SearchIcon sx={{ color: '#666' }} />
                 </InputAdornment>
               ),
               endAdornment: (
@@ -409,6 +409,7 @@ const SearchContent: React.FC = () => {
                         color: '#ffffff',
                         width: '40px',
                         height: '40px',
+                        mr: 1,
                         '&:hover': {
                           backgroundColor: '#4a7ab0'
                         }
@@ -554,7 +555,7 @@ const SearchContent: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#666', marginLeft: '8px' }} />
+                    <SearchIcon sx={{ color: '#666' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -566,6 +567,7 @@ const SearchContent: React.FC = () => {
                           backgroundColor: '#5b8ec4',
                           color: '#ffffff',
                           width: '40px',
+                          mr: 1,
                           height: '40px',
                           '&:hover': {
                             backgroundColor: '#4a7ab0'
