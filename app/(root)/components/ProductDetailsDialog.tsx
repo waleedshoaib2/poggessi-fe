@@ -1,8 +1,7 @@
 'use client'
 import React from 'react'
-import { Dialog, DialogContent, DialogTitle, IconButton, Typography, Box, Grid, Divider, Stack } from '@mui/material'
+import { Dialog, DialogContent, DialogTitle, IconButton, Typography, Box, Grid, CardMedia } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import Image from 'next/image'
 
 interface ProductDetailsDialogProps {
   open: boolean
@@ -27,6 +26,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
         sx: {
           borderRadius: '16px',
           padding: '16px',
+          bgcolor: 'white',
           maxWidth: '800px'
         }
       }}
@@ -50,36 +50,36 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
         {/* Product Image */}
         <Box
           sx={{
             width: '100%',
-            height: '400px',
+            height: '290px',
             borderRadius: '12px',
             overflow: 'hidden',
-            border: '2px solid #2196f3', // Blue border as seen in design
+            border: '2px solid #e0e0e0',
             mb: 3,
-            position: 'relative'
+            backgroundColor: '#f5f5f5' // Background for empty space
           }}
         >
           {imageUrl ? (
-            <Box
+            <CardMedia
+              component="img"
+              height="290px"
+              image={imageUrl}
+              alt={metadata.item_num}
               sx={{
+                objectFit: 'contain',
                 width: '100%',
-                height: '400px',
-                overflow: 'auto', // scroll instead of crop
-                position: 'relative'
+                height: '100%'
               }}
-            >
-              <Image src={imageUrl} alt={metadata.item_num} fill style={{ objectFit: 'contain' }} />
-            </Box>
+            />
           ) : (
             <Box
               sx={{
                 width: '100%',
                 height: '100%',
-                bgcolor: '#f5f5f5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'

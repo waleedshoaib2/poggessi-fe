@@ -23,7 +23,7 @@ const renderSearchResults = (
     setIsDialogOpen(true)
   }
   return (
-    <Card sx={{ mt: 2, bgcolor: '#F0F1F3', padding: '16px', borderRadius: 4 }}>
+    <Card sx={{ mt: 2, bgcolor: 'background.paper', padding: '16px', borderRadius: 4 }}>
       <Grid container spacing={2}>
         {results.map((result, index) => {
           return (
@@ -42,7 +42,7 @@ const renderSearchResults = (
                   flexDirection: 'column',
                   borderRadius: 4,
                   width: { xs: '100%', sm: '250px', md: '250px' },
-                  bgcolor: '#E4EBF5',
+                  bgcolor: '#fff',
                   cursor: 'pointer',
                   transition: 'transform 0.2s',
                   '&:hover': {

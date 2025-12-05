@@ -255,7 +255,7 @@ const SearchContent: React.FC = () => {
                   sx={{
                     p: 2,
                     borderRadius: '12px',
-                    backgroundColor: message.type === 'user' ? 'primary.light' : 'rgba(255,255,255,0.8)',
+                    backgroundColor: message.type === 'user' ? 'primary.light' : 'background.paper',
                     color: message.type === 'user' ? 'primary.contrastText' : 'text.primary',
                     maxWidth: '100%'
                   }}
@@ -305,7 +305,7 @@ const SearchContent: React.FC = () => {
                 sx={{
                   p: 2,
                   borderRadius: '12px',
-                  backgroundColor: 'rgba(255,255,255,0.8)',
+                  backgroundColor: 'background.paper',
                   display: 'flex',
                   alignItems: 'center'
                 }}
