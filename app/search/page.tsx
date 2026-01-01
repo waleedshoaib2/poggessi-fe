@@ -126,7 +126,7 @@ const SearchContent: React.FC = () => {
       }
 
       const response = await fetch(
-        `https://a94721f0d5ed.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`,
+        `https://34c4b5209e21.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`,
         {
           method: 'POST',
           headers: headers,
