@@ -1,12 +1,12 @@
 'use client'
 
-import { AppBar, Box, Toolbar, IconButton, Popover, Tooltip } from '@mui/material'
+import { AppBar, Box, Toolbar, IconButton, Popover, Tooltip, CircularProgress } from '@mui/material'
 import { MAIN_GRADIENT } from '../libs/mui/theme/palette'
 import Image from 'next/image'
 import { Suspense, useEffect, useState } from 'react'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import Configuration from './components/Configuration'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const [height, setHeight] = useState(0)
@@ -130,8 +130,41 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const router = useRouter()
+  const isRootRoute = pathname === '/'
+
+  // Redirect to login page on root route
+  useEffect(() => {
+    if (isRootRoute) {
+      router.push('/login')
+    }
+  }, [isRootRoute, router])
+
+  // Show white screen with loader on root route
+  if (isRootRoute) {
+    return (
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}
+      >
+        <CircularProgress size={50} />
+      </Box>
+    )
+  }
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<CircularProgress size={50} />}>
       <MainLayoutContent>{children}</MainLayoutContent>
     </Suspense>
   )

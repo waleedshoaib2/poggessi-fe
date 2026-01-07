@@ -11,6 +11,7 @@ import MainLayout from '../(root)/layout'
 import ProductDetailsDialog from '../(root)/components/ProductDetailsDialog'
 import renderSearchResults from '../(root)/components/results'
 import { useSearchParams } from 'next/navigation'
+import { ROUTES } from '../config/api'
 
 interface SearchResult {
   id: string
@@ -126,7 +127,7 @@ const SearchContent: React.FC = () => {
       }
 
       const response = await fetch(
-        `https://34c4b5209e21.ngrok-free.app/api/search/hybrid?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`,
+        `${ROUTES.SEARCH}?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`,
         {
           method: 'POST',
           headers: headers,

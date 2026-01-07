@@ -11,6 +11,7 @@ interface ProductDetailsDialogProps {
 
 const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product }) => {
   if (!product) return null
+  console.log('product', product)
 
   const { metadata, score } = product
   const imageUrl = metadata.signed_urls && metadata.signed_urls.length > 0 ? metadata.signed_urls[0] : ''
@@ -173,6 +174,14 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
               </Typography>
               <Typography variant="body1" fontWeight="medium">
                 {metadata.volume || '0.3'}
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Typography variant="caption" color="text.secondary" display="block">
+                Source:
+              </Typography>
+              <Typography variant="body1" fontWeight="medium">
+                {metadata.source || '0.3'}
               </Typography>
             </Grid>
 
