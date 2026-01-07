@@ -5,13 +5,13 @@ import { MAIN_GRADIENT } from '../libs/mui/theme/palette'
 import Image from 'next/image'
 import { Suspense, useEffect, useState } from 'react'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import Configuration from './components/Configuration'
+import Configuration, { NumResults } from './components/Configuration'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const [height, setHeight] = useState(0)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-  const [numResults, setNumResults] = useState(3)
+  const [numResults, setNumResults] = useState<NumResults>(3)
   const [confidence, setConfidence] = useState(0.3)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -38,7 +38,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   const open = Boolean(anchorEl)
-  const handleNumResultsChange = (value: number) => {
+  const handleNumResultsChange = (value: NumResults) => {
     setNumResults(value)
     updateURL('top_k', value.toString())
   }

@@ -1,23 +1,27 @@
 'use client'
+
 import { Paper, Box, Typography, Slider, Stack } from '@mui/material'
-const Configuration = ({
-  numResults,
-  setNumResults,
-  confidence,
-  setConfidence
-}: // onClose
-{
-  numResults: number
-  setNumResults: (numResults: number) => void
+
+export type NumResults = number | 'all'
+
+interface ConfigurationProps {
+  numResults: NumResults
+  setNumResults: (numResults: NumResults) => void
   confidence: number
   setConfidence: (confidence: number) => void
   onClose?: () => void
-}) => {
-  const handleNumResultsChange = (event: Event, newValue: number | number[]) => {
-    setNumResults(newValue as number)
+}
+
+const Configuration = ({ numResults, setNumResults, confidence, setConfidence }: ConfigurationProps) => {
+  // Convert "all" → 10 for slider
+  const sliderNumResults = numResults === 'all' ? 10 : numResults
+
+  const handleNumResultsChange = (_: Event, newValue: number | number[]) => {
+    const value = newValue as number
+    setNumResults(value === 10 ? 'all' : value)
   }
 
-  const handleConfidenceChange = (event: Event, newValue: number | number[]) => {
+  const handleConfidenceChange = (_: Event, newValue: number | number[]) => {
     setConfidence(newValue as number)
   }
 
@@ -37,29 +41,31 @@ const Configuration = ({
         color: 'white'
       }}
     >
+      {/* Header */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          {/* <SettingsOutlinedIcon /> */}
-          <Typography variant="h6" fontWeight="medium">
-            Configuration
-          </Typography>
-        </Stack>
-        {/* <IconButton sx={{ color: 'white' }} onClick={onClose}>
-            <ViewSidebarOutlinedIcon />
-        </IconButton> */}
+        <Typography variant="h6" fontWeight="medium">
+          Configuration
+        </Typography>
       </Stack>
 
-      <Box mb={2}>
+      {/* No. of Results */}
+      <Box mb={3}>
         <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
           No. of Results
         </Typography>
+
         <Slider
-          value={numResults}
+          value={sliderNumResults}
           onChange={handleNumResultsChange}
           min={1}
           max={10}
           step={1}
+          marks={[
+            { value: 1, label: '1' },
+            { value: 10, label: 'All' }
+          ]}
           valueLabelDisplay="on"
+          valueLabelFormat={(value) => (value === 10 ? 'All' : value)}
           sx={{
             color: '#90caf9',
             height: 8,
@@ -102,10 +108,12 @@ const Configuration = ({
         />
       </Box>
 
+      {/* Confidence Threshold */}
       <Box>
         <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
           Confidence Threshold
         </Typography>
+
         <Slider
           value={confidence}
           onChange={handleConfidenceChange}
