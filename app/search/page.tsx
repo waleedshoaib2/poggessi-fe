@@ -12,24 +12,11 @@ import ProductDetailsDialog from '../(root)/components/ProductDetailsDialog'
 import renderSearchResults from '../(root)/components/results'
 import { useSearchParams } from 'next/navigation'
 import { ROUTES } from '../config/api'
-
-interface SearchResult {
-  id: string
-  score: number
-  metadata: {
-    product_id: string
-    item_num: string
-    specs: string
-    dims: string
-    material_finishing: string
-    img_paths: string // JSON string
-    [key: string]: any
-  }
-}
+import { ProductResult } from '../config/type'
 
 interface SearchResponse {
   status: string
-  matches: SearchResult[]
+  matches: ProductResult[]
 }
 
 interface Message {
@@ -38,7 +25,7 @@ interface Message {
   content: string
   image?: string
   timestamp: Date
-  searchResults?: SearchResult[]
+  searchResults?: ProductResult[]
 }
 
 const SearchContent: React.FC = () => {
@@ -46,7 +33,7 @@ const SearchContent: React.FC = () => {
   const [inputValue, setInputValue] = useState('')
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<SearchResult | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -110,7 +97,7 @@ const SearchContent: React.FC = () => {
     return new Blob([ab], { type: mimeString })
   }
 
-  const searchHybrid = async (text: string, image?: string | null): Promise<SearchResult[]> => {
+  const searchHybrid = async (text: string, image?: string | null): Promise<ProductResult[]> => {
     try {
       const formData = new FormData()
       if (image) {
@@ -126,14 +113,11 @@ const SearchContent: React.FC = () => {
         headers['Content-Type'] = 'application/json'
       }
 
-      const response = await fetch(
-        `${ROUTES.SEARCH}?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`,
-        {
-          method: 'POST',
-          headers: headers,
-          body: image ? formData : undefined
-        }
-      )
+      const response = await fetch(`${ROUTES.SEARCH}?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`, {
+        method: 'POST',
+        headers: headers,
+        body: image ? formData : undefined
+      })
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`)
@@ -621,7 +605,9 @@ const SearchContent: React.FC = () => {
         </Paper>
       )}
 
-      <ProductDetailsDialog open={isDialogOpen} onClose={handleCloseDialog} product={selectedProduct} />
+      {selectedProduct && (
+        <ProductDetailsDialog open={isDialogOpen} onClose={handleCloseDialog} product={selectedProduct} />
+      )}
     </MainLayout>
   )
 }

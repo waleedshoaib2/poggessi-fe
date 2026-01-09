@@ -1,31 +1,19 @@
 'use client'
+import { ProductResult } from '@/app/config/type'
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material'
-interface SearchResult {
-  id: string
-  score: number
-  metadata: {
-    product_id: string
-    item_num: string
-    specs: string
-    dims: string
-    material_finishing: string
-    img_paths: string // JSON string
-    [key: string]: any
-  }
-}
 const renderSearchResults = (
-  results: SearchResult[],
-  setSelectedProduct: (product: SearchResult) => void,
+  results: ProductResult[],
+  setSelectedProduct: (product: ProductResult) => void,
   setIsDialogOpen: (open: boolean) => void
 ) => {
-  const handleProductClick = (product: SearchResult) => {
+  const handleProductClick = (product: ProductResult) => {
     setSelectedProduct(product)
     setIsDialogOpen(true)
   }
   return (
     <Card sx={{ mt: 2, bgcolor: 'background.paper', padding: '16px', borderRadius: 4 }}>
       <Grid container spacing={2}>
-        {results.map((result, index) => {
+        {results.map((result) => {
           return (
             <Grid
               size={{
@@ -69,14 +57,12 @@ const renderSearchResults = (
 
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Typography gutterBottom variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                    {result.metadata?.item_name ?? `Item No: ${result.metadata.item_num}`}
+                    {`Item No: ${result.metadata.item_num}`}
                   </Typography>
 
                   <Typography variant="body2" sx={{ mb: 1 }}>
                     {`Price: ${
-                      result.metadata?.exw_quotes_per_pc
-                        ? parseFloat(result.metadata.exw_quotes_per_pc).toFixed(0)
-                        : '--'
+                      result.metadata?.exw_quotes_per_pc ? result.metadata.exw_quotes_per_pc.toFixed(0) : '--'
                     }$ | Similarity: ${(result.score * 100).toFixed(2)}%`}
                   </Typography>
                 </CardContent>

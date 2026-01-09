@@ -9,16 +9,20 @@ import Configuration, { NumResults } from './components/Configuration'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
-  const [height, setHeight] = useState(0)
+  // Initialize with a function to avoid accessing window during SSR
+  const [height, setHeight] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerHeight
+    }
+    return 0
+  })
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [numResults, setNumResults] = useState<NumResults>(3)
   const [confidence, setConfidence] = useState(0.3)
   const router = useRouter()
   const searchParams = useSearchParams()
-  useEffect(() => {
-    // Set initial height
-    setHeight(window.innerHeight)
 
+  useEffect(() => {
     // Update on resize
     const handleResize = () => {
       setHeight(window.innerHeight)
@@ -105,9 +109,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 
       <Box
         sx={{
-          // height: '695px',
           height: `calc(${height}px - 95px)`,
-          // Correct way to set background image
           backgroundImage: 'url(/main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
