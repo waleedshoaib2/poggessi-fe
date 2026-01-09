@@ -25,7 +25,6 @@ interface ProductDetailsDialogProps {
 
 const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product, back }) => {
   if (!product) return null
-  console.log('product', product)
 
   const { metadata, score } = product
   const imageUrl = metadata.signed_urls && metadata.signed_urls.length > 0 ? metadata.signed_urls[0] : ''

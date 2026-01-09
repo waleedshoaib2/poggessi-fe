@@ -124,7 +124,7 @@ const Variants = ({ result, imageUrl }: Variant) => {
                 <TableRow
                   key={row.id}
                   sx={{
-                    cursor: 'pointer',
+                    // cursor: 'pointer',
                     '&:hover': { bgcolor: '#f9f9f9' } // Optional: adds a hover effect
                   }}
                 >
