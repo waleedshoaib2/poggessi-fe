@@ -59,11 +59,16 @@ const renderSearchResults = (
                   <Typography gutterBottom variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     {`Item No: ${result.metadata.item_num}`}
                   </Typography>
-
+                  {/* 
                   <Typography variant="body2" sx={{ mb: 1 }}>
                     {`Price: ${
                       result.metadata?.exw_quotes_per_pc ? result.metadata.exw_quotes_per_pc.toFixed(0) : '--'
                     }$ | Similarity: ${(result.score * 100).toFixed(2)}%`}
+                  </Typography> */}
+                  <Typography variant="body2" sx={{ mb: 1 }} align="center" textAlign="center">
+                    {`Price: ${
+                      result.metadata?.exw_quotes_per_pc ? result.metadata.exw_quotes_per_pc.toFixed(0) : '--'
+                    }$`}
                   </Typography>
                 </CardContent>
               </Card>

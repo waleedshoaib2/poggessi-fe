@@ -81,9 +81,10 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
           <Typography variant="body1" sx={{ mt: 0.5 }}>
             Price: {metadata?.exw_quotes_per_pc ? metadata.exw_quotes_per_pc.toFixed(0) : 'N/A'}
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+
+          {/* <Typography variant="body1" color="text.secondary">
             Similarity: {(score * 100).toFixed(0)}%
-          </Typography>
+          </Typography> */}
           <Box
             sx={{
               width: '100%',
