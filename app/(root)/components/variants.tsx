@@ -129,7 +129,7 @@ const Variants = ({ result, imageUrl }: Variant) => {
                   }}
                 >
                   <TableCell component="th" scope="row">
-                    {row.dims.split('1.')[0] || 'N/A'}
+                    {row.dims?.split('1.')[0] || 'N/A'}
                   </TableCell>
                   <TableCell>{row.exw_quotes_per_pc ? row.exw_quotes_per_pc.toFixed(0) : 'N/A'}</TableCell>
                   <TableCell>{row.item_num}</TableCell>

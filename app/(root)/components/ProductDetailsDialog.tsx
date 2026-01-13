@@ -154,7 +154,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
                   Dimensions:
                 </Typography>
                 <Typography variant="body1" fontWeight="medium">
-                  {metadata.dims.split('1.')[0] || 'N/A'}
+                  {metadata.dims?.split('1.')[0] || 'N/A'}
                 </Typography>
               </Grid>
 
