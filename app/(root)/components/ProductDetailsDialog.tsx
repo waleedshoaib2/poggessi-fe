@@ -21,9 +21,22 @@ interface ProductDetailsDialogProps {
   onClose: () => void
   product: ProductResult // Using any to match the flexible metadata structure
   back?: boolean
+  selectedProductIds: string[]
+  selectedProducts: ProductResult[]
+  setSelectedProductIds: React.Dispatch<React.SetStateAction<string[]>>
+  setSelectedProducts: React.Dispatch<React.SetStateAction<ProductResult[]>>
 }
 
-const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product, back }) => {
+const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
+  open,
+  onClose,
+  product,
+  back,
+  selectedProductIds,
+  selectedProducts,
+  setSelectedProductIds,
+  setSelectedProducts
+}) => {
   if (!product) return null
 
   // const { metadata, score } = product
@@ -75,7 +88,15 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
       </DialogTitle>
 
       {product.hasVariation ? (
-        <Variants result={product} imageUrl={imageUrl} />
+        <Variants
+          result={product}
+          imageUrl={imageUrl}
+          selectedProductIds={selectedProductIds}
+          selectedProducts={selectedProducts}
+          setSelectedProductIds={setSelectedProductIds}
+          setSelectedProducts={setSelectedProducts}
+          onClose={onClose}
+        />
       ) : (
         <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
           {/* Product Image */}

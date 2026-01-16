@@ -35,6 +35,9 @@ const SearchContent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
+  const [selectedProducts, setSelectedProducts] = useState<ProductResult[]>([])
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const searchParams = useSearchParams()
@@ -127,12 +130,14 @@ const SearchContent: React.FC = () => {
       return data.matches || []
     } catch (error) {
       console.error('Search failed:', error)
-      return []
+      throw new Error(`API error: ${error}`)
     }
   }
 
   const handleSendMessage = async () => {
     if ((!inputValue.trim() && !selectedImage) || isLoading) return
+    setSelectedProductIds([])
+    setSelectedProducts([])
 
     const newUserMessage: Message = {
       id: Date.now().toString(),
@@ -268,7 +273,15 @@ const SearchContent: React.FC = () => {
 
                 {message.searchResults && message.searchResults.length > 0 && (
                   <Box sx={{ mt: 1, width: '100%' }}>
-                    {renderSearchResults(message.searchResults, setSelectedProduct, setIsDialogOpen)}
+                    {renderSearchResults(
+                      message.searchResults,
+                      setSelectedProduct,
+                      setIsDialogOpen,
+                      selectedProductIds,
+                      setSelectedProductIds,
+                      setSelectedProducts,
+                      selectedProducts
+                    )}
                   </Box>
                 )}
               </Box>
@@ -606,7 +619,15 @@ const SearchContent: React.FC = () => {
       )}
 
       {selectedProduct && (
-        <ProductDetailsDialog open={isDialogOpen} onClose={handleCloseDialog} product={selectedProduct} />
+        <ProductDetailsDialog
+          open={isDialogOpen}
+          onClose={handleCloseDialog}
+          product={selectedProduct}
+          selectedProductIds={selectedProductIds}
+          selectedProducts={selectedProducts}
+          setSelectedProductIds={setSelectedProductIds}
+          setSelectedProducts={setSelectedProducts}
+        />
       )}
     </MainLayout>
   )
