@@ -79,7 +79,7 @@ const renderSearchResults = (
 
       <Grid container spacing={2}>
         {results.map((result) => {
-          const variants = result.hasVariation ? result.fullData ?? [] : [result]
+          const variants = result.hasVariation ? (result.fullData ?? []) : [result]
           const selectedInResult = variants.filter((v) => selectedProductIds.includes(v.id))
           const selectedCount = selectedInResult.length
           const isSelected = selectedCount > 0
@@ -178,7 +178,7 @@ const renderSearchResults = (
                   </Typography>
                   <Typography variant="body2" color="text.secondary" align="center">
                     {`Price: ${
-                      result.metadata?.exw_quotes_per_pc ? result.metadata.exw_quotes_per_pc.toFixed(0) : '--'
+                      result.metadata?.exw_quotes_per_pc ? result.metadata?.exw_quotes_per_pc?.toFixed(0) : '--'
                     }$`}
                   </Typography>
                 </CardContent>
