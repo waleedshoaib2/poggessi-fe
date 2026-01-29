@@ -7,7 +7,7 @@ import { ProductMetadata, ProductResult } from './type'
  */
 const mapMetadataToRow = (item: ProductResult, metadata: ProductMetadata) => ({
     Item_No: metadata.item_num ?? '',
-    Price: metadata.exw_quotes_per_pc?.toFixed(0) ?? '',
+    Price: metadata.exw_quotes_per_pc ? metadata.exw_quotes_per_pc.toFixed(0) : 'N/A',
     Specifications: metadata.specs ?? '',
     Dimensions: metadata.dims ?? '',
     'Request Date': item.metadata.request_date ?? '',
@@ -16,7 +16,7 @@ const mapMetadataToRow = (item: ProductResult, metadata: ProductMetadata) => ({
     'Sample Status': item.metadata.sample_status ?? '',
     'MOQ Loading Qty': metadata.moq_loading_qty ?? '',
     Program: metadata.program_name ?? '',
-    Score: item.score ? (item.score * 100)?.toFixed(2) : '',
+    Score: item.score ? (item.score * 100)?.toFixed(2) : 'N/A',
     Volume: item.metadata.u_vol ?? '',
     Source: item.metadata.source ?? '',
 })

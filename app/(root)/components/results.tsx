@@ -178,8 +178,8 @@ const renderSearchResults = (
                   </Typography>
                   <Typography variant="body2" color="text.secondary" align="center">
                     {`Price: ${
-                      result.metadata?.exw_quotes_per_pc ? result.metadata?.exw_quotes_per_pc?.toFixed(0) : '--'
-                    }$`}
+                      result.metadata?.exw_quotes_per_pc ? result.metadata?.exw_quotes_per_pc?.toFixed(0) + '$' : 'N/A'
+                    }`}
                   </Typography>
                 </CardContent>
               </Card>
