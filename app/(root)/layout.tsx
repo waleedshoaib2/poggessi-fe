@@ -10,29 +10,11 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   // Initialize with a function to avoid accessing window during SSR
-  const [height, setHeight] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerHeight
-    }
-    return 0
-  })
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [numResults, setNumResults] = useState<NumResults>(3)
   const [confidence, setConfidence] = useState(0.3)
   const router = useRouter()
   const searchParams = useSearchParams()
-
-  useEffect(() => {
-    // Update on resize
-    const handleResize = () => {
-      setHeight(window.innerHeight)
-    }
-
-    window.addEventListener('resize', handleResize)
-
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -61,7 +43,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppBar
-        position="static"
+        position="fixed"
         sx={{
           backgroundImage: MAIN_GRADIENT
         }}
@@ -109,19 +91,17 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 
       <Box
         sx={{
-          height: `calc(${height}px - 95px)`,
+          minHeight: '100vh',
           backgroundImage: 'url(/main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed',
           display: 'flex',
-          objectFit: 'cover',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'auto',
           p: 3,
+          pt: 15, // Ensure top padding accounts for fixed header
           boxSizing: 'border-box'
         }}
       >

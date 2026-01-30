@@ -463,10 +463,11 @@ const SearchContent: React.FC = () => {
             borderRadius: '16px',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            my: 'auto' // Center vertically in empty state
           }}
         >
-          {messages.length === 0 && (
+          {/* {messages.length === 0 && (
             <Box sx={{ marginBottom: '24px' }}>
               <Typography
                 style={{
@@ -480,7 +481,7 @@ const SearchContent: React.FC = () => {
                 Search
               </Typography>
             </Box>
-          )}
+          )} */}
 
           {/* Input Area */}
           <Box sx={{ position: 'relative' }}>
