@@ -7,7 +7,7 @@ import { ProductMetadata, ProductResult } from './type'
  */
 const mapMetadataToRow = (item: ProductResult, metadata: ProductMetadata) => ({
     Item_No: metadata.item_num ?? '',
-    Price: metadata.exw_quotes_per_pc ? metadata.exw_quotes_per_pc.toFixed(0) : 'N/A',
+    Price: metadata.exw_quotes_per_pc ? roundToInteger(metadata.exw_quotes_per_pc) + '$' : 'N/A',
     Specifications: metadata.specs ?? '',
     Dimensions: metadata.dims ?? '',
     'Request Date': item.metadata.request_date ?? '',
@@ -68,3 +68,23 @@ export const exportSelectedToExcel = (data: ProductResult[]) => {
 
     saveAs(new Blob([buffer]), 'selected-products.xlsx')
 }
+
+export const roundToInteger = (value: string | number): string => {
+    // Handle null, undefined, empty string
+    if (value == null || value === '') {
+        return '0'
+    }
+
+    // Convert to number
+    const numValue = Number(value)
+
+    // Check if it's a valid number
+    if (isNaN(numValue)) {
+        return '0'
+    }
+
+    // Round and return as string
+    return numValue.toFixed(0)
+}
+
+// Usage:

@@ -20,6 +20,7 @@ import {
 import { ProductResult } from '@/app/config/type'
 import ProductDetailsDialog from './ProductDetailsDialog'
 import { RemoveRedEye } from '@mui/icons-material'
+import { roundToInteger } from '@/app/config/helper'
 
 interface Variant {
   result: ProductResult
@@ -177,7 +178,7 @@ const Variants = ({
                     <TableCell component="th" scope="row">
                       {row.dims?.split('1.')[0] || 'N/A'}
                     </TableCell>
-                    <TableCell>{row.exw_quotes_per_pc ? row.exw_quotes_per_pc.toFixed(0) : 'N/A'}</TableCell>
+                    <TableCell>{row.exw_quotes_per_pc ? roundToInteger(row.exw_quotes_per_pc) + '$' : 'N/A'}</TableCell>
                     <TableCell>{row.item_num}</TableCell>
                     <TableCell>{row.u_vol}</TableCell>
                     <TableCell>

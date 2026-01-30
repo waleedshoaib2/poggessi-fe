@@ -1,5 +1,5 @@
 'use client'
-import { exportSelectedToExcel } from '@/app/config/helper'
+import { exportSelectedToExcel, roundToInteger } from '@/app/config/helper'
 import { ProductResult } from '@/app/config/type'
 import { Download } from '@mui/icons-material'
 import { Box, Card, CardContent, CardMedia, Checkbox, Grid, IconButton, Tooltip, Typography } from '@mui/material'
@@ -178,7 +178,9 @@ const renderSearchResults = (
                   </Typography>
                   <Typography variant="body2" color="text.secondary" align="center">
                     {`Price: ${
-                      result.metadata?.exw_quotes_per_pc ? result.metadata?.exw_quotes_per_pc?.toFixed(0) + '$' : 'N/A'
+                      result.metadata?.exw_quotes_per_pc
+                        ? roundToInteger(result.metadata.exw_quotes_per_pc) + '$'
+                        : 'N/A'
                     }`}
                   </Typography>
                 </CardContent>
