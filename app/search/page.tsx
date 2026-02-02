@@ -1,6 +1,19 @@
 'use client'
 import React, { useState, useRef, useEffect, Suspense } from 'react'
-import { Box, TextField, IconButton, Paper, Typography, Avatar, CircularProgress, InputAdornment } from '@mui/material'
+import {
+  Box,
+  TextField,
+  IconButton,
+  Paper,
+  Typography,
+  Avatar,
+  CircularProgress,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select
+} from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import CameraAltIcon from '@mui/icons-material/CameraAlt'
 import SendIcon from '@mui/icons-material/Send'
@@ -39,6 +52,7 @@ interface Message {
   originalQuery?: {
     text: string
     image?: string
+    source?: string
   }
   selectedFilters?: Record<string, string>
 }
@@ -47,6 +61,7 @@ const SearchContent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [sourceFilter, setSourceFilter] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isFiltering, setIsFiltering] = useState(false)
   const [filterError, setFilterError] = useState<string | null>(null)
@@ -139,7 +154,8 @@ const SearchContent: React.FC = () => {
   const searchHybrid = async (
     text: string,
     chatId: string,
-    image?: string | null
+    image?: string | null,
+    source?: string
   ): Promise<SearchResponse> => {
     try {
       const formData = new FormData()
@@ -156,6 +172,7 @@ const SearchContent: React.FC = () => {
       params.set('top_k', (topK || 3).toString())
       params.set('conf_t', (confT || 0.3).toString())
       params.set('chat_id', chatId)
+      if (source) params.set('source', source)
 
       const response = await fetch(`${ROUTES.SEARCH}?${params.toString()}`, {
         method: 'POST',
@@ -236,7 +253,12 @@ const SearchContent: React.FC = () => {
     setIsFiltering(true)
 
     try {
-      const data = await searchHybrid(message.originalQuery.text, nextChatId, message.originalQuery.image)
+      const data = await searchHybrid(
+        message.originalQuery.text,
+        nextChatId,
+        message.originalQuery.image,
+        message.originalQuery.source
+      )
       setMessages((prev) =>
         prev.map((m) =>
           m.id === messageId
@@ -286,7 +308,7 @@ const SearchContent: React.FC = () => {
       const chatId = createChatId()
       setStoredChatId(chatId)
 
-      const data = await searchHybrid(newUserMessage.content, chatId, newUserMessage.image)
+      const data = await searchHybrid(newUserMessage.content, chatId, newUserMessage.image, sourceFilter || undefined)
       const results = data.matches || []
 
       const botResponse: Message = {
@@ -306,7 +328,8 @@ const SearchContent: React.FC = () => {
         chatId,
         originalQuery: {
           text: newUserMessage.content,
-          image: newUserMessage.image
+          image: newUserMessage.image,
+          source: sourceFilter || undefined
         },
         selectedFilters: {}
       }
@@ -477,6 +500,22 @@ const SearchContent: React.FC = () => {
       )}
       {messages.length > 0 ? (
         <Box sx={{ position: 'relative', width: '100%', maxWidth: '900px' }}>
+          <Box sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
+            <FormControl size="small" sx={{ minWidth: 220 }}>
+              <InputLabel id="source-filter-label">Source</InputLabel>
+              <Select
+                labelId="source-filter-label"
+                value={sourceFilter}
+                label="Source"
+                onChange={(e) => setSourceFilter(e.target.value)}
+              >
+                <MenuItem value="">All Sources</MenuItem>
+                <MenuItem value="Catalog Items">Catalog Items</MenuItem>
+                <MenuItem value="Customized Quoted">Customized Quoted</MenuItem>
+                <MenuItem value="Original">Original</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           {selectedImage && (
             <Box
               sx={{
@@ -644,6 +683,22 @@ const SearchContent: React.FC = () => {
 
           {/* Input Area */}
           <Box sx={{ position: 'relative' }}>
+            <Box sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
+              <FormControl size="small" sx={{ minWidth: 220 }}>
+                <InputLabel id="source-filter-label-empty">Source</InputLabel>
+                <Select
+                  labelId="source-filter-label-empty"
+                  value={sourceFilter}
+                  label="Source"
+                  onChange={(e) => setSourceFilter(e.target.value)}
+                >
+                  <MenuItem value="">All Sources</MenuItem>
+                  <MenuItem value="Catalog Items">Catalog Items</MenuItem>
+                  <MenuItem value="Customized Quoted">Customized Quoted</MenuItem>
+                  <MenuItem value="Original">Original</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             {selectedImage && (
               <Box
                 sx={{
