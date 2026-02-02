@@ -1,5 +1,5 @@
 'use client'
-import { exportSelectedToExcel } from '@/app/config/helper'
+import { exportSelectedToExcel, formatPrice } from '@/app/config/helper'
 import { ProductResult } from '@/app/config/type'
 import { Download } from '@mui/icons-material'
 import { Box, Card, CardContent, CardMedia, Checkbox, Grid, IconButton, Tooltip, Typography } from '@mui/material'
@@ -196,9 +196,7 @@ const renderSearchResults = (
                     {`Item No: ${result.metadata.item_num}`}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" align="center">
-                    {`Price: ${
-                      result.metadata?.exw_quotes_per_pc ? result.metadata.exw_quotes_per_pc.toFixed(0) : '--'
-                    }$`}
+                    {`Price: ${formatPrice(result.metadata?.exw_quotes_per_pc) || '--'}$`}
                   </Typography>
                 </CardContent>
               </Card>

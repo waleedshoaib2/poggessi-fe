@@ -6,9 +6,11 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
-  const [height, setHeight] = useState(0)
+  const [height, setHeight] = useState(() => {
+    if (typeof window !== 'undefined') return window.innerHeight
+    return 0
+  })
   useEffect(() => {
-    setHeight(window.innerHeight)
     const handleResize = () => {
       setHeight(window.innerHeight)
     }

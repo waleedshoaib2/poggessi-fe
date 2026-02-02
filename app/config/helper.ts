@@ -2,12 +2,21 @@ import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 import { ProductMetadata, ProductResult } from './type'
 
+export const formatPrice = (value: unknown) => {
+    if (typeof value === 'number') return Number.isFinite(value) ? value.toFixed(0) : ''
+    if (typeof value === 'string') {
+        const parsed = Number.parseFloat(value)
+        return Number.isFinite(parsed) ? parsed.toFixed(0) : ''
+    }
+    return ''
+}
+
 /**
  * Convert metadata to a flat Excel row
  */
 const mapMetadataToRow = (item: ProductResult, metadata: ProductMetadata) => ({
     Item_No: metadata.item_num ?? '',
-    Price: metadata.exw_quotes_per_pc.toFixed(0) ?? '',
+    Price: formatPrice(metadata.exw_quotes_per_pc),
     Specifications: metadata.specs ?? '',
     Dimensions: metadata.dims ?? '',
     'Request Date': item.metadata.request_date ?? '',

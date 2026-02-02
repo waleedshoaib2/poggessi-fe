@@ -6,4 +6,5 @@ export const apiURL = baseURL + '/api';
 // Navigation Routes
 export const ROUTES = {
   SEARCH: apiURL + '/search/hybrid',
+  FILTER: apiURL + '/search/filter'
 } as const;

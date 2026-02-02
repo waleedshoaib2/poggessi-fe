@@ -1,7 +1,7 @@
 export interface ProductMetadata {
     description: string
     dims: string
-    exw_quotes_per_pc: number
+    exw_quotes_per_pc: number | string
     factory_name: string
     img_ref: string
     item_num: string
