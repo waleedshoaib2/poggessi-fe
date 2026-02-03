@@ -348,6 +348,35 @@ const SearchContent: React.FC = () => {
 
   return (
     <MainLayout>
+      {(isLoading || isFiltering) && (
+        <Box
+          sx={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none'
+          }}
+        >
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: 3,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: 6
+            }}
+          >
+            <CircularProgress size={34} sx={{ color: '#5b8ec4' }} />
+          </Box>
+        </Box>
+      )}
       {/* Messages Area */}
       {messages.length > 0 && (
         <Box
@@ -602,37 +631,23 @@ const SearchContent: React.FC = () => {
                     >
                       <CameraAltIcon sx={{ fontSize: '20px' }} />
                     </IconButton>
-                    {isLoading || isFiltering ? (
-                      <Box
+                    {(inputValue.trim() || selectedImage) && (
+                      <IconButton
+                        onClick={handleSendMessage}
+                        disabled={isLoading || isFiltering}
                         sx={{
+                          backgroundColor: '#5b8ec4',
+                          color: '#ffffff',
                           width: '40px',
-                          height: '40px',
                           mr: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
+                          height: '40px',
+                          '&:hover': {
+                            backgroundColor: '#4a7ab0'
+                          }
                         }}
                       >
-                        <CircularProgress size={20} sx={{ color: '#5b8ec4' }} />
-                      </Box>
-                    ) : (
-                      (inputValue.trim() || selectedImage) && (
-                        <IconButton
-                          onClick={handleSendMessage}
-                          sx={{
-                            backgroundColor: '#5b8ec4',
-                            color: '#ffffff',
-                            width: '40px',
-                            mr: 1,
-                            height: '40px',
-                            '&:hover': {
-                              backgroundColor: '#4a7ab0'
-                            }
-                          }}
-                        >
-                          <SendIcon sx={{ fontSize: '20px' }} />
-                        </IconButton>
-                      )
+                        <SendIcon sx={{ fontSize: '20px' }} />
+                      </IconButton>
                     )}
                   </Box>
                 </InputAdornment>
@@ -785,37 +800,23 @@ const SearchContent: React.FC = () => {
                       >
                         <CameraAltIcon sx={{ fontSize: '20px' }} />
                       </IconButton>
-                      {isLoading || isFiltering ? (
-                        <Box
+                      {(inputValue.trim() || selectedImage) && (
+                        <IconButton
+                          onClick={handleSendMessage}
+                          disabled={isLoading || isFiltering}
                           sx={{
+                            backgroundColor: '#5b8ec4',
+                            color: '#ffffff',
                             width: '40px',
-                            height: '40px',
                             mr: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
+                            height: '40px',
+                            '&:hover': {
+                              backgroundColor: '#4a7ab0'
+                            }
                           }}
                         >
-                          <CircularProgress size={20} sx={{ color: '#5b8ec4' }} />
-                        </Box>
-                      ) : (
-                        (inputValue.trim() || selectedImage) && (
-                          <IconButton
-                            onClick={handleSendMessage}
-                            sx={{
-                              backgroundColor: '#5b8ec4',
-                              color: '#ffffff',
-                              width: '40px',
-                              mr: 1,
-                              height: '40px',
-                              '&:hover': {
-                                backgroundColor: '#4a7ab0'
-                              }
-                            }}
-                          >
-                            <SendIcon sx={{ fontSize: '20px' }} />
-                          </IconButton>
-                        )
+                          <SendIcon sx={{ fontSize: '20px' }} />
+                        </IconButton>
                       )}
                     </Box>
                   </InputAdornment>
