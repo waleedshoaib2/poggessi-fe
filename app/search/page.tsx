@@ -588,6 +588,7 @@ const SearchContent: React.FC = () => {
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
                     <IconButton
                       onClick={triggerFileSelect}
+                      disabled={isLoading || isFiltering}
                       sx={{
                         backgroundColor: '#5b8ec4',
                         color: '#ffffff',
@@ -601,22 +602,37 @@ const SearchContent: React.FC = () => {
                     >
                       <CameraAltIcon sx={{ fontSize: '20px' }} />
                     </IconButton>
-                    {(inputValue.trim() || selectedImage) && (
-                      <IconButton
-                        onClick={handleSendMessage}
+                    {isLoading || isFiltering ? (
+                      <Box
                         sx={{
-                          backgroundColor: '#5b8ec4',
-                          color: '#ffffff',
                           width: '40px',
-                          mr: 1,
                           height: '40px',
-                          '&:hover': {
-                            backgroundColor: '#4a7ab0'
-                          }
+                          mr: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
                         }}
                       >
-                        <SendIcon sx={{ fontSize: '20px' }} />
-                      </IconButton>
+                        <CircularProgress size={20} sx={{ color: '#5b8ec4' }} />
+                      </Box>
+                    ) : (
+                      (inputValue.trim() || selectedImage) && (
+                        <IconButton
+                          onClick={handleSendMessage}
+                          sx={{
+                            backgroundColor: '#5b8ec4',
+                            color: '#ffffff',
+                            width: '40px',
+                            mr: 1,
+                            height: '40px',
+                            '&:hover': {
+                              backgroundColor: '#4a7ab0'
+                            }
+                          }}
+                        >
+                          <SendIcon sx={{ fontSize: '20px' }} />
+                        </IconButton>
+                      )
                     )}
                   </Box>
                 </InputAdornment>
@@ -755,6 +771,7 @@ const SearchContent: React.FC = () => {
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                       <IconButton
                         onClick={triggerFileSelect}
+                        disabled={isLoading || isFiltering}
                         sx={{
                           backgroundColor: '#5b8ec4',
                           color: '#ffffff',
@@ -768,22 +785,37 @@ const SearchContent: React.FC = () => {
                       >
                         <CameraAltIcon sx={{ fontSize: '20px' }} />
                       </IconButton>
-                      {(inputValue.trim() || selectedImage) && (
-                        <IconButton
-                          onClick={handleSendMessage}
+                      {isLoading || isFiltering ? (
+                        <Box
                           sx={{
-                            backgroundColor: '#5b8ec4',
-                            color: '#ffffff',
                             width: '40px',
-                            mr: 1,
                             height: '40px',
-                            '&:hover': {
-                              backgroundColor: '#4a7ab0'
-                            }
+                            mr: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                           }}
                         >
-                          <SendIcon sx={{ fontSize: '20px' }} />
-                        </IconButton>
+                          <CircularProgress size={20} sx={{ color: '#5b8ec4' }} />
+                        </Box>
+                      ) : (
+                        (inputValue.trim() || selectedImage) && (
+                          <IconButton
+                            onClick={handleSendMessage}
+                            sx={{
+                              backgroundColor: '#5b8ec4',
+                              color: '#ffffff',
+                              width: '40px',
+                              mr: 1,
+                              height: '40px',
+                              '&:hover': {
+                                backgroundColor: '#4a7ab0'
+                              }
+                            }}
+                          >
+                            <SendIcon sx={{ fontSize: '20px' }} />
+                          </IconButton>
+                        )
                       )}
                     </Box>
                   </InputAdornment>
