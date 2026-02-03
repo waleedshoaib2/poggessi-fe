@@ -492,31 +492,6 @@ const SearchContent: React.FC = () => {
               </Box>
             </Box>
           ))}
-          {isLoading && (
-            <Box sx={{ display: 'flex', gap: 2, alignSelf: 'flex-start' }}>
-              <Avatar
-                sx={{
-                  bgcolor: 'secondary.main',
-                  width: 32,
-                  height: 32
-                }}
-              >
-                <SmartToyIcon fontSize="small" />
-              </Avatar>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2,
-                  borderRadius: '12px',
-                  backgroundColor: 'background.paper',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <CircularProgress size={20} color="inherit" />
-              </Paper>
-            </Box>
-          )}
           <div ref={messagesEndRef} />
         </Box>
       )}
