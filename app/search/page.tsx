@@ -36,26 +36,6 @@ interface SearchResponse {
   refinement_questions?: RefinementQuestion[]
 }
 
-const reconcileSelectedFilters = (
-  selected: Record<string, string>,
-  questions: RefinementQuestion[] | undefined
-): Record<string, string> => {
-  if (!questions || questions.length === 0) return {}
-  const allowed = new Map<string, Set<string>>()
-  questions.forEach((q) => {
-    allowed.set(
-      q.id,
-      new Set((q.options ?? []).map((o) => o.value))
-    )
-  })
-  const next: Record<string, string> = {}
-  Object.entries(selected).forEach(([questionId, value]) => {
-    const set = allowed.get(questionId)
-    if (set && set.has(value)) next[questionId] = value
-  })
-  return next
-}
-
 interface Message {
   id: string
   type: 'user' | 'bot'
@@ -247,7 +227,6 @@ const SearchContent: React.FC = () => {
         prev.map((m) => {
           if (m.id !== messageId) return m
           const nextQuestions = data.refinement_questions ?? []
-          const reconciledSelected = reconcileSelectedFilters(nextSelectedFilters, nextQuestions)
           return {
             ...m,
             content: data.matches?.length ? `Filtered to ${data.matches.length} matches.` : "Sorry, I couldn't find any matches.",
@@ -256,7 +235,7 @@ const SearchContent: React.FC = () => {
             groupedMatches: data.grouped_matches,
             refinementQuestions: nextQuestions,
             refinementVersion: (m.refinementVersion ?? 0) + 1,
-            selectedFilters: reconciledSelected
+            selectedFilters: {}
           }
         })
       )
