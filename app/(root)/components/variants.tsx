@@ -20,6 +20,7 @@ import {
 import { ProductResult } from '@/app/config/type'
 import ProductDetailsDialog from './ProductDetailsDialog'
 import { RemoveRedEye } from '@mui/icons-material'
+import { formatPrice } from '@/app/config/helper'
 
 interface Variant {
   result: ProductResult
@@ -132,7 +133,7 @@ const Variants = ({
               <TableRow sx={{ backgroundColor: 'primary.main' }}>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white', width: 50 }}>Select</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Dimensions</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Price</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Cost</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Item No.</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Volume</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Action</TableCell>
@@ -177,7 +178,7 @@ const Variants = ({
                     <TableCell component="th" scope="row">
                       {row.dims?.split('1.')[0] || 'N/A'}
                     </TableCell>
-                    <TableCell>{row.exw_quotes_per_pc ? row.exw_quotes_per_pc.toFixed(0) : 'N/A'}</TableCell>
+                    <TableCell>{formatPrice(row.exw_quotes_per_pc) || 'N/A'}</TableCell>
                     <TableCell>{row.item_num}</TableCell>
                     <TableCell>{row.u_vol}</TableCell>
                     <TableCell>

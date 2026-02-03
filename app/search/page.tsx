@@ -10,13 +10,17 @@ import PersonIcon from '@mui/icons-material/Person'
 import MainLayout from '../(root)/layout'
 import ProductDetailsDialog from '../(root)/components/ProductDetailsDialog'
 import renderSearchResults from '../(root)/components/results'
+import RefinementQuestions, { RefinementQuestion } from '../(root)/components/RefinementQuestions'
 import { useSearchParams } from 'next/navigation'
 import { ROUTES } from '../config/api'
 import { ProductResult } from '../config/type'
 
 interface SearchResponse {
   status: string
+  total_matches?: number
+  grouped_matches?: number
   matches: ProductResult[]
+  refinement_questions?: RefinementQuestion[]
 }
 
 interface Message {
@@ -26,6 +30,19 @@ interface Message {
   image?: string
   timestamp: Date
   searchResults?: ProductResult[]
+  totalMatches?: number
+  groupedMatches?: number
+  originalTotalMatches?: number
+  originalGroupedMatches?: number
+  refinementQuestions?: RefinementQuestion[]
+  refinementVersion?: number
+  chatId?: string
+  originalQuery?: {
+    text: string
+    image?: string
+    source?: string
+  }
+  selectedFilters?: Record<string, string>
 }
 
 const SearchContent: React.FC = () => {
@@ -33,6 +50,9 @@ const SearchContent: React.FC = () => {
   const [inputValue, setInputValue] = useState('')
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isFiltering, setIsFiltering] = useState(false)
+  const [filterError, setFilterError] = useState<string | null>(null)
+  const [activeBotMessageId, setActiveBotMessageId] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
@@ -45,6 +65,7 @@ const SearchContent: React.FC = () => {
   // Get individual params
   const topK = searchParams.get('top_k') // Returns string or null
   const confT = searchParams.get('conf_t')
+  const source = searchParams.get('source') || undefined
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -100,7 +121,30 @@ const SearchContent: React.FC = () => {
     return new Blob([ab], { type: mimeString })
   }
 
-  const searchHybrid = async (text: string, image?: string | null): Promise<ProductResult[]> => {
+  const createChatId = () => {
+    try {
+      if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
+    } catch {
+      // ignore
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  }
+
+  const setStoredChatId = (chatId: string) => {
+    try {
+      if (typeof window === 'undefined') return
+      window.localStorage.setItem('chat_id', chatId)
+    } catch {
+      // ignore
+    }
+  }
+
+  const searchHybrid = async (
+    text: string,
+    chatId: string,
+    image?: string | null,
+    source?: string
+  ): Promise<SearchResponse> => {
     try {
       const formData = new FormData()
       if (image) {
@@ -111,12 +155,14 @@ const SearchContent: React.FC = () => {
       const headers: HeadersInit = {
         accept: 'application/json'
       }
+      const params = new URLSearchParams()
+      if (text) params.set('text', text)
+      params.set('top_k', (topK || 3).toString())
+      params.set('conf_t', (confT || 0.3).toString())
+      params.set('chat_id', chatId)
+      if (source) params.set('source', source)
 
-      if (!image) {
-        headers['Content-Type'] = 'application/json'
-      }
-
-      const response = await fetch(`${ROUTES.SEARCH}?text=${text}&top_k=${topK || 3}&conf_t=${confT || 0.3}`, {
+      const response = await fetch(`${ROUTES.SEARCH}?${params.toString()}`, {
         method: 'POST',
         headers: headers,
         body: image ? formData : undefined
@@ -127,10 +173,106 @@ const SearchContent: React.FC = () => {
       }
 
       const data: SearchResponse = await response.json()
-      return data.matches || []
+      return data
     } catch (error) {
       console.error('Search failed:', error)
       throw new Error(`API error: ${error}`)
+    }
+  }
+
+  const applyFilters = async (messageId: string, nextSelectedFilters: Record<string, string>) => {
+    const message = messages.find((m) => m.id === messageId)
+    const chatId = message?.chatId
+    if (!chatId) return
+
+    setFilterError(null)
+    setIsFiltering(true)
+
+    try {
+      const params = new URLSearchParams()
+      params.set('chat_id', chatId)
+      const filters = Object.entries(nextSelectedFilters).map(([questionId, selectedValue]) => ({
+        question_id: questionId,
+        selected_value: selectedValue
+      }))
+      params.set('filters', JSON.stringify(filters))
+
+      const response = await fetch(`${ROUTES.FILTER}?${params.toString()}`, {
+        method: 'POST',
+        headers: { accept: 'application/json' }
+      })
+      if (!response.ok) {
+        if (response.status === 404) {
+          setFilterError('No cached results found. Please run a new search.')
+          return
+        }
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data: SearchResponse = await response.json()
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id !== messageId) return m
+          const nextQuestions = data.refinement_questions ?? []
+          return {
+            ...m,
+            content: data.matches?.length ? `Filtered to ${data.matches.length} matches.` : "Sorry, I couldn't find any matches.",
+            searchResults: data.matches || [],
+            totalMatches: data.total_matches,
+            groupedMatches: data.grouped_matches,
+            refinementQuestions: nextQuestions,
+            refinementVersion: (m.refinementVersion ?? 0) + 1,
+            selectedFilters: {}
+          }
+        })
+      )
+    } catch (error) {
+      console.error('Filter failed:', error)
+      setFilterError('Sorry, something went wrong while applying that filter.')
+    } finally {
+      setIsFiltering(false)
+    }
+  }
+
+  const resetRefinements = async (messageId: string) => {
+    const message = messages.find((m) => m.id === messageId)
+    if (!message?.originalQuery) return
+
+    const nextChatId = createChatId()
+    setStoredChatId(nextChatId)
+    setFilterError(null)
+    setIsFiltering(true)
+
+    try {
+      const data = await searchHybrid(
+        message.originalQuery.text,
+        nextChatId,
+        message.originalQuery.image,
+        message.originalQuery.source
+      )
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? {
+                ...m,
+                chatId: nextChatId,
+                content: data.matches?.length ? `Found ${data.matches.length} matches for your search.` : "Sorry, I couldn't find any matches.",
+                searchResults: data.matches || [],
+                totalMatches: data.total_matches,
+                groupedMatches: data.grouped_matches,
+                originalTotalMatches: data.total_matches,
+                originalGroupedMatches: data.grouped_matches,
+                refinementQuestions: data.refinement_questions ?? [],
+                selectedFilters: {}
+              }
+            : m
+        )
+      )
+    } catch (error) {
+      console.error('Reset failed:', error)
+      setFilterError('Sorry, something went wrong while resetting refinements.')
+    } finally {
+      setIsFiltering(false)
     }
   }
 
@@ -138,6 +280,7 @@ const SearchContent: React.FC = () => {
     if ((!inputValue.trim() && !selectedImage) || isLoading) return
     setSelectedProductIds([])
     setSelectedProducts([])
+    setFilterError(null)
 
     const newUserMessage: Message = {
       id: Date.now().toString(),
@@ -153,7 +296,11 @@ const SearchContent: React.FC = () => {
     setIsLoading(true)
 
     try {
-      const results = await searchHybrid(newUserMessage.content, newUserMessage.image)
+      const chatId = createChatId()
+      setStoredChatId(chatId)
+
+      const data = await searchHybrid(newUserMessage.content, chatId, newUserMessage.image, source)
+      const results = data.matches || []
 
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -163,10 +310,24 @@ const SearchContent: React.FC = () => {
             ? `Found ${results.length} matches for your search.`
             : "Sorry, I couldn't find any matches.",
         timestamp: new Date(),
-        searchResults: results
+        searchResults: results,
+        totalMatches: data.total_matches,
+        groupedMatches: data.grouped_matches,
+        originalTotalMatches: data.total_matches,
+        originalGroupedMatches: data.grouped_matches,
+        refinementQuestions: data.refinement_questions ?? [],
+        refinementVersion: 0,
+        chatId,
+        originalQuery: {
+          text: newUserMessage.content,
+          image: newUserMessage.image,
+          source: source
+        },
+        selectedFilters: {}
       }
       setMessages((prev) => [...prev, botResponse])
-    } catch (error) {
+      setActiveBotMessageId(botResponse.id)
+    } catch {
       const errorResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
@@ -174,6 +335,7 @@ const SearchContent: React.FC = () => {
         timestamp: new Date()
       }
       setMessages((prev) => [...prev, errorResponse])
+      setActiveBotMessageId(errorResponse.id)
     } finally {
       setIsLoading(false)
     }
@@ -273,6 +435,20 @@ const SearchContent: React.FC = () => {
 
                 {message.searchResults && message.searchResults.length > 0 && (
                   <Box sx={{ mt: 1, width: '100%' }}>
+                    {message.type === 'bot' && message.refinementQuestions && message.refinementQuestions.length > 0 && (
+                      <RefinementQuestions
+                        key={`${message.id}-${message.refinementVersion ?? 0}`}
+                        questions={message.refinementQuestions}
+                        selectedAnswers={message.selectedFilters ?? {}}
+                        totalMatches={message.originalTotalMatches ?? message.totalMatches}
+                        groupedMatches={message.groupedMatches}
+                        loading={isFiltering}
+                        disabled={message.id !== activeBotMessageId}
+                        error={message.id === activeBotMessageId ? filterError : null}
+                        onApply={(nextSelected) => applyFilters(message.id, nextSelected)}
+                        onReset={() => resetRefinements(message.id)}
+                      />
+                    )}
                     {renderSearchResults(
                       message.searchResults,
                       setSelectedProduct,

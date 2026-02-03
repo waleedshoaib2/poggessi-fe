@@ -1,6 +1,6 @@
 'use client'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import React, { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from 'react'
+import React, { PropsWithChildren, createContext, useCallback, useContext, useState } from 'react'
 import { themeLight } from './themes'
 export enum THEMES {
   SYSTEM = 'system',
@@ -23,8 +23,23 @@ const ThemeContext = createContext<{
 ThemeContext.displayName = 'ThemeContext'
 // Context provider
 export const ThemeContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [theme, _setTheme] = useState(THEMES.SYSTEM)
-  const [darkMode, setDarkMode] = useState(false)
+  const getInitialTheme = (): THEMES => {
+    if (typeof window === 'undefined') return THEMES.SYSTEM
+    const stored = window.localStorage.getItem('theme')
+    switch (stored) {
+      case THEMES.DARK:
+        return THEMES.DARK
+      case THEMES.LIGHT:
+        return THEMES.LIGHT
+      case THEMES.SYSTEM:
+        return THEMES.SYSTEM
+      default:
+        return THEMES.SYSTEM
+    }
+  }
+
+  const [theme, _setTheme] = useState<THEMES>(getInitialTheme)
+  const [darkMode, setDarkMode] = useState(() => isDarkMode(getInitialTheme()))
 
   const setTheme = useCallback((theme: THEMES) => {
     _setTheme(theme)
@@ -33,21 +48,6 @@ export const ThemeContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       localStorage.setItem('theme', theme)
     }
   }, [])
-
-  useEffect(() => {
-    const theme = window.localStorage.getItem('theme')
-    switch (theme) {
-      case THEMES.DARK:
-        setTheme(THEMES.DARK)
-        break
-      case THEMES.LIGHT:
-        setTheme(THEMES.LIGHT)
-        break
-      default:
-        setTheme(THEMES.SYSTEM)
-        break
-    }
-  }, [setTheme])
 
   return (
     <ThemeContext.Provider value={{ theme, darkMode, setTheme }}>

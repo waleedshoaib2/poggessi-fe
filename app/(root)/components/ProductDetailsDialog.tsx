@@ -15,6 +15,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { ProductResult } from '@/app/config/type'
 import Variants from './variants'
 import { ArrowBack } from '@mui/icons-material'
+import { formatPrice } from '@/app/config/helper'
 
 interface ProductDetailsDialogProps {
   open: boolean
@@ -101,7 +102,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
         <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
           {/* Product Image */}
           <Typography variant="body1" sx={{ mt: 0.5 }}>
-            Price: {metadata?.exw_quotes_per_pc ? metadata.exw_quotes_per_pc.toFixed(0) : 'N/A'}
+            Cost: {formatPrice(metadata?.exw_quotes_per_pc) || 'N/A'}
           </Typography>
 
           {/* <Typography variant="body1" color="text.secondary">

@@ -1,6 +1,6 @@
 'use client'
 
-import { Paper, Box, Typography, Slider, Stack } from '@mui/material'
+import { Paper, Box, Typography, Slider, Stack, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 
 export type NumResults = number | 'all'
 
@@ -9,10 +9,12 @@ interface ConfigurationProps {
   setNumResults: (numResults: NumResults) => void
   confidence: number
   setConfidence: (confidence: number) => void
+  source: string
+  setSource: (source: string) => void
   onClose?: () => void
 }
 
-const Configuration = ({ numResults, setNumResults, confidence, setConfidence }: ConfigurationProps) => {
+const Configuration = ({ numResults, setNumResults, confidence, setConfidence, source, setSource }: ConfigurationProps) => {
   // Convert "all" → 10 for slider
   const sliderNumResults = numResults === 'all' ? 10 : numResults
 
@@ -161,6 +163,33 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
             }
           }}
         />
+      </Box>
+
+      {/* Source */}
+      <Box mt={3}>
+        <FormControl fullWidth size="small">
+          <InputLabel id="source-filter-label-config" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+            Source
+          </InputLabel>
+          <Select
+            labelId="source-filter-label-config"
+            value={source}
+            label="Source"
+            onChange={(e) => setSource(e.target.value)}
+            sx={{
+              color: 'white',
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.35)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.6)' },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#90caf9' },
+              '& .MuiSvgIcon-root': { color: 'white' }
+            }}
+          >
+            <MenuItem value="">All Sources</MenuItem>
+            <MenuItem value="Catalog Items">Catalog Items</MenuItem>
+            <MenuItem value="Customized Quoted">Customized Quoted</MenuItem>
+            <MenuItem value="Original">Original</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
     </Paper>
   )

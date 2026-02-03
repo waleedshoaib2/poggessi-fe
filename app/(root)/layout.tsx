@@ -19,6 +19,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [numResults, setNumResults] = useState<NumResults>(3)
   const [confidence, setConfidence] = useState(0.3)
+  const [source, setSource] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -52,9 +53,18 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
     updateURL('conf_t', value.toString())
   }
 
+  const handleSourceChange = (value: string) => {
+    setSource(value)
+    updateURL('source', value)
+  }
+
   const updateURL = (param: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    params.set(param, value)
+    if (value) {
+      params.set(param, value)
+    } else {
+      params.delete(param)
+    }
     router.push(`?${params.toString()}`)
   }
 
@@ -103,6 +113,8 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
           setNumResults={handleNumResultsChange}
           confidence={confidence}
           setConfidence={handleConfidenceChange}
+          source={source}
+          setSource={handleSourceChange}
           onClose={handleClose}
         />
       </Popover>
