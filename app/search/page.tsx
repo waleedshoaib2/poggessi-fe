@@ -36,6 +36,26 @@ interface SearchResponse {
   refinement_questions?: RefinementQuestion[]
 }
 
+const reconcileSelectedFilters = (
+  selected: Record<string, string>,
+  questions: RefinementQuestion[] | undefined
+): Record<string, string> => {
+  if (!questions || questions.length === 0) return {}
+  const allowed = new Map<string, Set<string>>()
+  questions.forEach((q) => {
+    allowed.set(
+      q.id,
+      new Set((q.options ?? []).map((o) => o.value))
+    )
+  })
+  const next: Record<string, string> = {}
+  Object.entries(selected).forEach(([questionId, value]) => {
+    const set = allowed.get(questionId)
+    if (set && set.has(value)) next[questionId] = value
+  })
+  return next
+}
+
 interface Message {
   id: string
   type: 'user' | 'bot'
@@ -48,6 +68,7 @@ interface Message {
   originalTotalMatches?: number
   originalGroupedMatches?: number
   refinementQuestions?: RefinementQuestion[]
+  refinementVersion?: number
   chatId?: string
   originalQuery?: {
     text: string
@@ -225,13 +246,17 @@ const SearchContent: React.FC = () => {
       setMessages((prev) =>
         prev.map((m) => {
           if (m.id !== messageId) return m
+          const nextQuestions = data.refinement_questions ?? []
+          const reconciledSelected = reconcileSelectedFilters(nextSelectedFilters, nextQuestions)
           return {
             ...m,
             content: data.matches?.length ? `Filtered to ${data.matches.length} matches.` : "Sorry, I couldn't find any matches.",
             searchResults: data.matches || [],
             totalMatches: data.total_matches,
             groupedMatches: data.grouped_matches,
-            selectedFilters: nextSelectedFilters
+            refinementQuestions: nextQuestions,
+            refinementVersion: (m.refinementVersion ?? 0) + 1,
+            selectedFilters: reconciledSelected
           }
         })
       )
@@ -325,6 +350,7 @@ const SearchContent: React.FC = () => {
         originalTotalMatches: data.total_matches,
         originalGroupedMatches: data.grouped_matches,
         refinementQuestions: data.refinement_questions ?? [],
+        refinementVersion: 0,
         chatId,
         originalQuery: {
           text: newUserMessage.content,
@@ -445,6 +471,7 @@ const SearchContent: React.FC = () => {
                   <Box sx={{ mt: 1, width: '100%' }}>
                     {message.type === 'bot' && message.refinementQuestions && message.refinementQuestions.length > 0 && (
                       <RefinementQuestions
+                        key={`${message.id}-${message.refinementVersion ?? 0}`}
                         questions={message.refinementQuestions}
                         selectedAnswers={message.selectedFilters ?? {}}
                         totalMatches={message.originalTotalMatches ?? message.totalMatches}
