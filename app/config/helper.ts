@@ -16,7 +16,7 @@ export const formatPrice = (value: unknown) => {
  */
 const mapMetadataToRow = (item: ProductResult, metadata: ProductMetadata) => ({
     Item_No: metadata.item_num ?? '',
-    Price: formatPrice(metadata.exw_quotes_per_pc),
+    Cost: formatPrice(metadata.exw_quotes_per_pc),
     Specifications: metadata.specs ?? '',
     Dimensions: metadata.dims ?? '',
     'Request Date': item.metadata.request_date ?? '',
