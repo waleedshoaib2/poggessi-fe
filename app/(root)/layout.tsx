@@ -73,6 +73,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
           vertical: 'top',
           horizontal: 'right'
         }}
+        transitionDuration={0}
         sx={{
           '& .MuiPopover-paper': {
             backgroundColor: 'transparent',
