@@ -1,6 +1,8 @@
 'use client'
 
-import { Paper, Box, Typography, Slider, Stack } from '@mui/material'
+import { Paper, Box, Typography, Slider, Stack, FormControl, Select, InputLabel, MenuItem } from '@mui/material'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
 
 export type NumResults = number | 'all'
 
@@ -14,8 +16,27 @@ interface ConfigurationProps {
 
 const Configuration = ({ numResults, setNumResults, confidence, setConfidence }: ConfigurationProps) => {
   // Convert "all" → 10 for slider
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // Internal state for the source dropdown
+  const [localSource, setLocalSource] = useState(searchParams.get('source') || '')
   const sliderNumResults = numResults === 'all' ? 10 : numResults
 
+  const handleSourceChange = (newSource: string) => {
+    setLocalSource(newSource)
+
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (newSource === 'All Sources' || newSource === '') {
+      params.delete('source') // Remove param if "All Sources" is selected
+    } else {
+      params.set('source', newSource) // Set param for specific source
+    }
+
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
+  }
   const handleNumResultsChange = (_: Event, newValue: number | number[]) => {
     const value = newValue as number
     setNumResults(value === 10 ? 'all' : value)
@@ -43,7 +64,7 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
     >
       {/* Header */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h6" fontWeight="medium">
+        <Typography variant="h6" fontWeight="light">
           Configuration
         </Typography>
       </Stack>
@@ -67,15 +88,23 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
           valueLabelDisplay="on"
           valueLabelFormat={(value) => (value === 10 ? 'All' : value)}
           sx={{
-            color: '#90caf9',
+            color: 'primary.main',
+            '& .MuiSlider-markLabel': {
+              color: 'white'
+            },
             height: 8,
             '& .MuiSlider-track': {
               border: 'none'
+              // backgroundColor: 'primary.main'
+            },
+            '& .MuiSlider-rail': {
+              backgroundColor: 'white',
+              opacity: 1
             },
             '& .MuiSlider-thumb': {
-              height: 24,
-              width: 24,
-              backgroundColor: '#fff',
+              height: 19,
+              width: 19,
+              backgroundColor: 'secondary.main',
               border: '2px solid currentColor',
               '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
                 boxShadow: 'inherit'
@@ -88,20 +117,19 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
               lineHeight: 1.2,
               fontSize: 12,
               background: 'unset',
-              padding: 0,
-              width: 32,
-              height: 32,
-              borderRadius: '50% 50% 50% 0',
+              padding: '4px 8px',
+              width: 'auto',
+              height: 'auto',
+              borderRadius: 1,
               backgroundColor: '#fff',
               color: '#000',
-              transformOrigin: 'bottom left',
-              transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+              top: '100%',
+              marginTop: '6px',
+              transformOrigin: 'top center',
+              transform: 'scale(0)',
               '&:before': { display: 'none' },
               '&.MuiSlider-valueLabelOpen': {
-                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)'
-              },
-              '& > *': {
-                transform: 'rotate(45deg)'
+                transform: 'scale(1)'
               }
             }
           }}
@@ -122,15 +150,23 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
           step={0.1}
           valueLabelDisplay="on"
           sx={{
-            color: '#90caf9',
+            color: 'primary.main',
+            '& .MuiSlider-markLabel': {
+              color: 'white'
+            },
             height: 8,
             '& .MuiSlider-track': {
               border: 'none'
+              // backgroundColor: 'primary.main'
+            },
+            '& .MuiSlider-rail': {
+              backgroundColor: 'white',
+              opacity: 1
             },
             '& .MuiSlider-thumb': {
-              height: 24,
-              width: 24,
-              backgroundColor: '#fff',
+              height: 19,
+              width: 19,
+              backgroundColor: 'secondary.main',
               border: '2px solid currentColor',
               '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
                 boxShadow: 'inherit'
@@ -143,24 +179,56 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
               lineHeight: 1.2,
               fontSize: 12,
               background: 'unset',
-              padding: 0,
-              width: 32,
-              height: 32,
-              borderRadius: '50% 50% 50% 0',
+              padding: '4px 8px',
+              width: 'auto',
+              height: 'auto',
+              borderRadius: 1,
               backgroundColor: '#fff',
               color: '#000',
-              transformOrigin: 'bottom left',
-              transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+              top: '100%',
+              marginTop: '6px',
+              transformOrigin: 'top center',
+              transform: 'scale(0)',
               '&:before': { display: 'none' },
               '&.MuiSlider-valueLabelOpen': {
-                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)'
-              },
-              '& > *': {
-                transform: 'rotate(45deg)'
+                transform: 'scale(1)'
               }
             }
           }}
         />
+      </Box>
+      <Box mt={1}>
+        <FormControl fullWidth size="small">
+          <InputLabel
+            id="source-filter-label-config"
+            sx={{
+              color: 'white',
+              '&.Mui-focused': {
+                color: 'white'
+              }
+            }}
+          >
+            Source
+          </InputLabel>
+          <Select
+            labelId="source-filter-label-config"
+            value={localSource}
+            label="Source"
+            onChange={(e) => handleSourceChange(e.target.value)}
+            sx={{
+              color: 'white',
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+              '& .MuiSvgIcon-root': { color: 'white' }
+            }}
+          >
+            <MenuItem value="All Sources">All Sources</MenuItem>
+            <MenuItem value="Catalog Items">Catalog Items</MenuItem>
+            <MenuItem value="Customized Quoted">Customized Quoted</MenuItem>
+            <MenuItem value="Original">Original</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
     </Paper>
   )
