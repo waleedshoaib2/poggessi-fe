@@ -3,7 +3,7 @@
 import { AppBar, Box, Toolbar, IconButton, Popover, Tooltip, CircularProgress } from '@mui/material'
 import { MAIN_GRADIENT } from '../libs/mui/theme/palette'
 import Image from 'next/image'
-import { Suspense, useEffect, useState } from 'react'
+import { Fragment, Suspense, useEffect, useState } from 'react'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import Configuration, { NumResults } from './components/Configuration'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
@@ -37,15 +37,16 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const updateURL = (param: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set(param, value)
-    router.push(`?${params.toString()}`)
+    router.push(`?${params.toString()}`, { scroll: false })
   }
 
   return (
-    <>
+    <Fragment>
       <AppBar
         position="fixed"
         sx={{
-          backgroundImage: MAIN_GRADIENT
+          backgroundImage: MAIN_GRADIENT,
+          borderRadius: '0 0 16px 16px'
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
@@ -107,7 +108,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       >
         {children}
       </Box>
-    </>
+    </Fragment>
   )
 }
 

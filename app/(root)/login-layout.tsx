@@ -8,10 +8,11 @@ import { useEffect, useState } from 'react'
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
   const [height, setHeight] = useState(0)
   useEffect(() => {
-    setHeight(window.innerHeight)
     const handleResize = () => {
       setHeight(window.innerHeight)
     }
+
+    handleResize()
     window.addEventListener('resize', handleResize)
 
     // Cleanup
@@ -21,9 +22,10 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
   return (
     <>
       <AppBar
-        position="static"
+        position="fixed"
         sx={{
-          backgroundImage: MAIN_GRADIENT
+          backgroundImage: MAIN_GRADIENT,
+          borderRadius: '0 0 16px 16px'
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
@@ -34,9 +36,10 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
       <Box
         sx={{
           // height: '695px',
-          height: `calc(${height}px - 95px)`,
+          height: `calc(${height}px)`,
           // Correct way to set background image
           backgroundImage: 'url(/login.png)',
+          // mt: 11,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

@@ -15,10 +15,10 @@ export const themeLight = createTheme({
     },
     text: {
       primary: "#5D6570",
-      secondary: "black",
+      secondary: "#5B7595",
       disabled: "#81848A"
     },
     divider: "#F3EFFF"
-  }      
- 
+  }
+
 });

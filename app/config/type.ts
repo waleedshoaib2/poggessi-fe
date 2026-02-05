@@ -42,3 +42,14 @@ export interface ProductResult {
     fullData?: FullProductData[]
     variationCount?: number
 }
+
+export interface RefinementQuestionOption {
+    value: string
+    label: string
+}
+
+export interface RefinementQuestion {
+    id: string
+    label: string
+    options: RefinementQuestionOption[]
+}

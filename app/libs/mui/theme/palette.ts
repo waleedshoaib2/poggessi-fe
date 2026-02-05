@@ -5,11 +5,12 @@ const palette: PaletteOptions = {
   primary: {
     contrastText: "#FFFFFF",
     main: "#5B7595", // 600
-   
+
   },
   secondary: {
     main: "#76A7F8",
-    dark: "#ffffff"
+    dark: "#383E49"
+
   },
   error: {
     "50": "#fff0f0",
@@ -79,10 +80,10 @@ const palette: PaletteOptions = {
     custom: {
       overlay: "rgba(255,255,255,0.2)"
     },
-      gradients: {
-        left: "#5D6570",
-        right: "#76A7F8"
-      }
+    gradients: {
+      left: "#5D6570",
+      right: "#76A7F8"
+    }
   }
 }
 
