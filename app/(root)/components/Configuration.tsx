@@ -70,7 +70,7 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
       </Stack>
 
       {/* No. of Results */}
-      <Box mb={3}>
+      <Box>
         <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
           No. of Results
         </Typography>
@@ -137,7 +137,7 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
       </Box>
 
       {/* Confidence Threshold */}
-      <Box>
+      <Box mb={2}>
         <Typography variant="body2" gutterBottom sx={{ opacity: 0.9 }}>
           Confidence Threshold
         </Typography>
