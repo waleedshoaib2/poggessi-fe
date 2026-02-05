@@ -655,22 +655,6 @@ const SearchContent: React.FC = () => {
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}
         >
-          {messages.length === 0 && (
-            <Box sx={{ marginBottom: '24px' }}>
-              <Typography
-                style={{
-                  color: '#ffffff',
-                  fontSize: '24px',
-                  fontWeight: 500,
-                  textAlign: 'center',
-                  margin: 0
-                }}
-              >
-                Search
-              </Typography>
-            </Box>
-          )}
-
           {/* Input Area */}
           <Box sx={{ position: 'relative' }}>
             {selectedImage && (

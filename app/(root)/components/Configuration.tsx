@@ -53,6 +53,7 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
         minHeight: '0vh',
         maxHeight: '65vh',
         display: 'flex',
+        minWidth: '18vw',
         flexDirection: 'column',
         p: 3,
         borderRadius: 4,
