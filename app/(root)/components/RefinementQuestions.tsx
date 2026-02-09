@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, Button, Paper, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export interface RefinementQuestionOption {
   value: string
@@ -42,6 +42,14 @@ export default function RefinementQuestions({
     })
     return normalized
   })
+
+  useEffect(() => {
+    const normalized: Record<string, string> = {}
+    Object.entries(selectedAnswers ?? {}).forEach(([k, v]) => {
+      if (v) normalized[k] = v
+    })
+    setDraftAnswers(normalized)
+  }, [selectedAnswers, questions])
 
   const hasAnySelection = Object.values(draftAnswers).some(Boolean)
   const isDirty = useMemo(() => {
