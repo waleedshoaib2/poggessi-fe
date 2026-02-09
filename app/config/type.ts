@@ -53,3 +53,31 @@ export interface RefinementQuestion {
     label: string
     options: RefinementQuestionOption[]
 }
+
+export interface SelectedFilter {
+    question_id: string;
+    selected_value: string;
+}
+export interface TurnHistoryItem {
+    turn_index: number;
+    role: 'search' | 'filter' | string; // Use string union if roles are limited
+    match_count: number;
+    filters_applied: AppliedFilter[];
+    selected_filters: AppliedFilter[];
+    refinement_questions: RefinementQuestion[];
+    created_at: string; // ISO Date string
+    is_original: boolean;
+}
+export interface AppliedFilter {
+    question_id: string
+    selected_value: string
+}
+
+export interface TurnCache {
+    matches: ProductResult[]
+    refinementQuestions: RefinementQuestion[]
+    filtersApplied: AppliedFilter[]
+    selectedFilters: AppliedFilter[]
+    totalMatches?: number
+    groupedMatches?: number
+}

@@ -11,16 +11,23 @@ import MainLayout from '../(root)/layout'
 import ProductDetailsDialog from '../(root)/components/ProductDetailsDialog'
 import renderSearchResults from '../(root)/components/results'
 import RefinementQuestions from '../(root)/components/RefinementQuestions'
+import Turn from '../(root)/components/turn'
 import { useSearchParams } from 'next/navigation'
 import { ROUTES } from '../config/api'
-import { ProductResult, RefinementQuestion } from '../config/type'
+import { ProductResult, RefinementQuestion, TurnHistoryItem, AppliedFilter, TurnCache } from '../config/type'
 
 interface SearchResponse {
   status: string
   total_matches?: number
   grouped_matches?: number
+  chat_id?: string
+  current_turn?: number
   matches: ProductResult[]
   refinement_questions?: RefinementQuestion[]
+  turn_history?: TurnHistoryItem[]
+  query?: {
+    filters_applied?: AppliedFilter[]
+  }
 }
 
 interface Message {
@@ -37,14 +44,17 @@ interface Message {
   refinementQuestions?: RefinementQuestion[]
   refinementVersion?: number
   chatId?: string
+  currentTurn?: number
+  turnHistory?: TurnHistoryItem[]
+  turnCache?: Record<number, TurnCache>
   originalQuery?: {
     text: string
     image?: string
     source?: string
   }
   selectedFilters?: Record<string, string>
+  turn_history?: TurnHistoryItem[]
 }
-
 const SearchContent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -68,6 +78,165 @@ const SearchContent: React.FC = () => {
   const source = searchParams.get('source') || undefined
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const formatAppliedFilters = (filters: AppliedFilter[]) => {
+    if (!filters || filters.length === 0) return 'No filters'
+    return filters.map((filter) => `${filter.question_id}=${filter.selected_value}`).join(', ')
+  }
+
+  const normalizeValue = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+  const getSelectedFiltersForTurn = (turnHistory: TurnHistoryItem[] | undefined, turnIndex: number | undefined) => {
+    if (!turnHistory || typeof turnIndex !== 'number') return {}
+    const turn = turnHistory.find((entry) => entry.turn_index === turnIndex)
+    if (!turn) return {}
+    const selected = turn.selected_filters ?? []
+    return selected.reduce<Record<string, string>>((acc, filter) => {
+      const question = turn.refinement_questions?.find((q) => q.id === filter.question_id)
+      if (question) {
+        const normalizedSelected = normalizeValue(filter.selected_value)
+        const match = question.options.find((opt) => {
+          const optValue = normalizeValue(opt.value)
+          const optLabel = normalizeValue(opt.label)
+          if (optValue === normalizedSelected || optLabel === normalizedSelected) return true
+          return (
+            optValue.includes(normalizedSelected) ||
+            normalizedSelected.includes(optValue) ||
+            optLabel.includes(normalizedSelected) ||
+            normalizedSelected.includes(optLabel)
+          )
+        })
+        if (match) {
+          acc[filter.question_id] = match.value
+          return acc
+        }
+      }
+      acc[filter.question_id] = filter.selected_value
+      return acc
+    }, {})
+  }
+
+  const getSelectedFiltersFromQuestions = (
+    filters: AppliedFilter[] | undefined,
+    questions: RefinementQuestion[] | undefined
+  ) => {
+    if (!filters || filters.length === 0) return {}
+    return filters.reduce<Record<string, string>>((acc, filter) => {
+      const question = questions?.find((q) => q.id === filter.question_id)
+      if (question) {
+        const normalizedSelected = normalizeValue(filter.selected_value)
+        const match = question.options.find((opt) => {
+          const optValue = normalizeValue(opt.value)
+          const optLabel = normalizeValue(opt.label)
+          if (optValue === normalizedSelected || optLabel === normalizedSelected) return true
+          return (
+            optValue.includes(normalizedSelected) ||
+            normalizedSelected.includes(optValue) ||
+            optLabel.includes(normalizedSelected) ||
+            normalizedSelected.includes(optLabel)
+          )
+        })
+        if (match) {
+          acc[filter.question_id] = match.value
+          return acc
+        }
+      }
+      acc[filter.question_id] = filter.selected_value
+      return acc
+    }, {})
+  }
+
+  const preferNonEmpty = (primary: Record<string, string>, fallback: Record<string, string>) =>
+    Object.keys(primary).length > 0 ? primary : fallback
+
+  const resolveFiltersApplied = (data: SearchResponse) => {
+    if (data.query?.filters_applied && data.query.filters_applied.length > 0) return data.query.filters_applied
+    if (data.turn_history && typeof data.current_turn === 'number') {
+      const turn = data.turn_history.find((entry) => entry.turn_index === data.current_turn)
+      if (turn?.filters_applied) return turn.filters_applied
+    }
+    return []
+  }
+
+  const resolveSelectedFilters = (data: SearchResponse) => {
+    if (data.turn_history && typeof data.current_turn === 'number') {
+      const turn = data.turn_history.find((entry) => entry.turn_index === data.current_turn)
+      if (turn?.selected_filters) return turn.selected_filters
+    }
+    return []
+  }
+
+  const updateTurnCache = (
+    existing: Record<number, TurnCache> | undefined,
+    data: SearchResponse
+  ): Record<number, TurnCache> => {
+    const turnIndex = data.current_turn ?? 0
+    const nextCache: Record<number, TurnCache> = { ...(existing ?? {}) }
+    nextCache[turnIndex] = {
+      matches: data.matches || [],
+      refinementQuestions: data.refinement_questions ?? [],
+      filtersApplied: resolveFiltersApplied(data),
+      selectedFilters: resolveSelectedFilters(data),
+      totalMatches: data.total_matches,
+      groupedMatches: data.grouped_matches
+    }
+
+    if (data.turn_history && data.turn_history.length > 0) {
+      const maxTurn = Math.max(...data.turn_history.map((entry) => entry.turn_index))
+      Object.keys(nextCache).forEach((key) => {
+        const idx = Number(key)
+        if (Number.isFinite(idx) && idx > maxTurn) delete nextCache[idx]
+      })
+
+      data.turn_history.forEach((turn) => {
+        const cached = nextCache[turn.turn_index]
+        if (!cached) return
+        cached.filtersApplied = turn.filters_applied ?? []
+        cached.selectedFilters = turn.selected_filters ?? []
+        cached.refinementQuestions = turn.refinement_questions ?? cached.refinementQuestions
+      })
+    }
+    return nextCache
+  }
+
+  const switchToTurn = async (messageId: string, turnIndex: number) => {
+    const message = messages.find((m) => m.id === messageId)
+    if (!message) return
+    if (turnIndex === message.currentTurn) return
+
+    const cached = message.turnCache?.[turnIndex]
+    if (!cached) {
+      setFilterError(`Turn ${turnIndex} is not cached. Please run a new search.`)
+      return
+    }
+
+    const nextSelectedFilters = getSelectedFiltersFromQuestions(cached.selectedFilters, cached.refinementQuestions)
+
+    setMessages((prev) =>
+      prev.map((m) => {
+        if (m.id !== messageId) return m
+        return {
+          ...m,
+          content: cached.matches.length
+            ? `Showing ${cached.matches.length} matches from turn ${turnIndex}.`
+            : "Sorry, I couldn't find any matches.",
+          searchResults: cached.matches,
+          totalMatches: cached.totalMatches,
+          groupedMatches: cached.groupedMatches,
+          refinementQuestions: cached.refinementQuestions,
+          refinementVersion: (m.refinementVersion ?? 0) + 1,
+          selectedFilters: nextSelectedFilters,
+          currentTurn: turnIndex
+        }
+      })
+    )
+    setActiveBotMessageId(messageId)
   }
 
   useEffect(() => {
@@ -191,6 +360,7 @@ const SearchContent: React.FC = () => {
     try {
       const params = new URLSearchParams()
       params.set('chat_id', chatId)
+      params.set('from_turn', (message.currentTurn ?? 0).toString())
       const filters = Object.entries(nextSelectedFilters).map(([questionId, selectedValue]) => ({
         question_id: questionId,
         selected_value: selectedValue
@@ -210,12 +380,22 @@ const SearchContent: React.FC = () => {
       }
 
       const data: SearchResponse = await response.json()
+      const nextChatId = data.chat_id ?? chatId
+      setStoredChatId(nextChatId)
+      const nextTurnHistory = data.turn_history ?? message.turnHistory
+      const nextTurnIndex = data.current_turn ?? message.currentTurn
+      const nextTurnCache = updateTurnCache(message.turnCache, data)
+      const turnSelectedFilters = preferNonEmpty(
+        getSelectedFiltersFromQuestions(resolveSelectedFilters(data), data.refinement_questions),
+        getSelectedFiltersForTurn(nextTurnHistory, nextTurnIndex)
+      )
       setMessages((prev) =>
         prev.map((m) => {
           if (m.id !== messageId) return m
           const nextQuestions = data.refinement_questions ?? []
           return {
             ...m,
+            chatId: nextChatId,
             content: data.matches?.length
               ? `Filtered to ${data.matches.length} matches.`
               : "Sorry, I couldn't find any matches.",
@@ -224,7 +404,10 @@ const SearchContent: React.FC = () => {
             groupedMatches: data.grouped_matches,
             refinementQuestions: nextQuestions,
             refinementVersion: (m.refinementVersion ?? 0) + 1,
-            selectedFilters: {}
+            selectedFilters: turnSelectedFilters,
+            currentTurn: nextTurnIndex,
+            turnHistory: nextTurnHistory,
+            turnCache: nextTurnCache
           }
         })
       )
@@ -238,6 +421,14 @@ const SearchContent: React.FC = () => {
 
   const resetRefinements = async (messageId: string) => {
     const message = messages.find((m) => m.id === messageId)
+    if (message?.turnHistory?.length) {
+      if (message.turnCache?.[0]) {
+        await switchToTurn(messageId, 0)
+      } else {
+        setFilterError('Turn 0 is not cached. Please run a new search.')
+      }
+      return
+    }
     if (!message?.originalQuery) return
 
     const nextChatId = createChatId()
@@ -251,6 +442,13 @@ const SearchContent: React.FC = () => {
         nextChatId,
         message.originalQuery.image,
         message.originalQuery.source
+      )
+      const nextTurnHistory = data.turn_history ?? []
+      const nextTurnIndex = data.current_turn ?? 0
+      const nextTurnCache = updateTurnCache(message.turnCache, data)
+      const nextSelectedFilters = preferNonEmpty(
+        getSelectedFiltersFromQuestions(resolveSelectedFilters(data), data.refinement_questions),
+        getSelectedFiltersForTurn(nextTurnHistory, nextTurnIndex)
       )
       setMessages((prev) =>
         prev.map((m) =>
@@ -267,7 +465,10 @@ const SearchContent: React.FC = () => {
                 originalTotalMatches: data.total_matches,
                 originalGroupedMatches: data.grouped_matches,
                 refinementQuestions: data.refinement_questions ?? [],
-                selectedFilters: {}
+                selectedFilters: nextSelectedFilters,
+                currentTurn: nextTurnIndex,
+                turnHistory: nextTurnHistory,
+                turnCache: nextTurnCache
               }
             : m
         )
@@ -305,6 +506,15 @@ const SearchContent: React.FC = () => {
 
       const data = await searchHybrid(newUserMessage.content, chatId, newUserMessage.image, source)
       const results = data.matches || []
+      const nextChatId = data.chat_id ?? chatId
+      setStoredChatId(nextChatId)
+      const nextTurnHistory = data.turn_history ?? []
+      const nextTurnIndex = data.current_turn ?? 0
+      const nextTurnCache = updateTurnCache(undefined, data)
+      const nextSelectedFilters = preferNonEmpty(
+        getSelectedFiltersFromQuestions(resolveSelectedFilters(data), data.refinement_questions),
+        getSelectedFiltersForTurn(nextTurnHistory, nextTurnIndex)
+      )
 
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -321,13 +531,17 @@ const SearchContent: React.FC = () => {
         originalGroupedMatches: data.grouped_matches,
         refinementQuestions: data.refinement_questions ?? [],
         refinementVersion: 0,
-        chatId,
+        chatId: nextChatId,
+        currentTurn: nextTurnIndex,
+        turnHistory: nextTurnHistory,
+        turnCache: nextTurnCache,
         originalQuery: {
           text: newUserMessage.content,
           image: newUserMessage.image,
           source: source
         },
-        selectedFilters: {}
+        selectedFilters: nextSelectedFilters,
+        turn_history: data.turn_history
       }
       setMessages((prev) => [...prev, botResponse])
       setActiveBotMessageId(botResponse.id)
@@ -468,6 +682,15 @@ const SearchContent: React.FC = () => {
 
                 {message.searchResults && message.searchResults.length > 0 && (
                   <Box sx={{ mt: 1, width: '100%' }}>
+                    {message.turnHistory && message.turnHistory.length > 0 && (
+                      <Turn
+                        turn_history={message.turnHistory}
+                        currentTurn={message.currentTurn}
+                        onTurnClick={(turnIndex) => void switchToTurn(message.id, turnIndex)}
+                        disabled={message.id !== activeBotMessageId || isFiltering}
+                        formatAppliedFilters={formatAppliedFilters}
+                      />
+                    )}
                     {message.type === 'bot' &&
                       message.refinementQuestions &&
                       message.refinementQuestions.length > 0 && (

@@ -45,7 +45,7 @@ export default function RefinementQuestions({
   if (!questions || questions.length === 0) return null
   const resultLabel =
     typeof groupedMatches === 'number' && typeof totalMatches === 'number'
-      ? `Showing ${groupedMatches} of ${totalMatches} results`
+      ? `Showing ${groupedMatches} results`
       : typeof totalMatches === 'number'
         ? `Showing ${totalMatches} results`
         : null
