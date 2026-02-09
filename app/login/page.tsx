@@ -16,7 +16,7 @@ const commonInputStyles = {
     backgroundColor: 'white',
     // Target the input element for text color
     '& input': {
-      color: 'secondary.main'
+      color: 'primary.main'
     },
     '& fieldset': {
       borderColor: 'primary.main',
@@ -30,12 +30,12 @@ const commonInputStyles = {
     },
     '& input:-webkit-autofill': {
       WebkitBoxShadow: '0 0 0 1000px white inset !important',
-      WebkitTextFillColor: 'secondary.main !important' // Ensure autofill text is also red
+      WebkitTextFillColor: 'primary.main !important' // Ensure autofill text is also red
     },
     // This targets the specific area around the icon
     '& .MuiInputAdornment-root': {
       backgroundColor: 'white !important',
-      color: 'secondary.main !important',
+      color: 'primary.main !important',
       marginRight: '10px !important' // Added space between icon and text
     }
   }

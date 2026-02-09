@@ -57,7 +57,7 @@ const Configuration = ({ numResults, setNumResults, confidence, setConfidence }:
         flexDirection: 'column',
         p: 3,
         borderRadius: 4,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: 'rgba(82, 78, 78, 0.1)',
         backdropFilter: 'blur(10px)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
         color: 'white'
