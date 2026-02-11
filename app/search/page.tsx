@@ -352,7 +352,7 @@ const SearchContent: React.FC = () => {
       }
 
       const headers: HeadersInit = {
-        'X-API-Key': 'sk_live_9fA3Xq7LmP2vN8zR4cY1hT6eW0uJ5bK7sD9gH3nQ8xZ1pR',
+        'X-API-Key': process.env.NEXT_PUBLIC_API_KEY as string,
         accept: 'application/json'
       }
       const params = new URLSearchParams()
@@ -400,7 +400,7 @@ const SearchContent: React.FC = () => {
 
       const response = await fetch(`${ROUTES.FILTER}?${params.toString()}`, {
         method: 'POST',
-        headers: { 'X-API-Key': 'sk_live_9fA3Xq7LmP2vN8zR4cY1hT6eW0uJ5bK7sD9gH3nQ8xZ1pR', accept: 'application/json' }
+        headers: { 'X-API-Key': process.env.NEXT_PUBLIC_API_KEY as string, accept: 'application/json' }
       })
       if (!response.ok) {
         if (response.status === 404) {
