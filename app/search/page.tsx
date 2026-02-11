@@ -55,6 +55,34 @@ interface Message {
   selectedFilters?: Record<string, string>
   turn_history?: TurnHistoryItem[]
 }
+
+const TypingDots: React.FC = () => {
+  return (
+    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', justifyContent: 'center' }}>
+      {[0, 1, 2].map((i) => (
+        <Box
+          key={i}
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            backgroundColor: '#5b8ec4',
+            animation: `typing-dot 1.5s infinite`,
+            animationDelay: `${i * 0.3}s`
+          }}
+        />
+      ))}
+
+      <style>{`
+        @keyframes typing-dot {
+          0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+    </Box>
+  )
+}
+
 const SearchContent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -67,6 +95,8 @@ const SearchContent: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
   const [selectedProducts, setSelectedProducts] = useState<ProductResult[]>([])
+  const [thinkingMessageId, setThinkingMessageId] = useState<string | null>(null)
+  const [thinkingDots, setThinkingDots] = useState('')
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -322,6 +352,7 @@ const SearchContent: React.FC = () => {
       }
 
       const headers: HeadersInit = {
+        'X-API-Key': 'sk_live_9fA3Xq7LmP2vN8zR4cY1hT6eW0uJ5bK7sD9gH3nQ8xZ1pR',
         accept: 'application/json'
       }
       const params = new URLSearchParams()
@@ -369,7 +400,7 @@ const SearchContent: React.FC = () => {
 
       const response = await fetch(`${ROUTES.FILTER}?${params.toString()}`, {
         method: 'POST',
-        headers: { accept: 'application/json' }
+        headers: { 'X-API-Key': 'sk_live_9fA3Xq7LmP2vN8zR4cY1hT6eW0uJ5bK7sD9gH3nQ8xZ1pR', accept: 'application/json' }
       })
       if (!response.ok) {
         if (response.status === 404) {
@@ -456,9 +487,7 @@ const SearchContent: React.FC = () => {
             ? {
                 ...m,
                 chatId: nextChatId,
-                content: data.matches?.length
-                  ? `Found ${data.matches.length} matches for your search.`
-                  : "Sorry, I couldn't find any matches.",
+                content: data.matches?.length ? `` : "Sorry, I couldn't find any matches.",
                 searchResults: data.matches || [],
                 totalMatches: data.total_matches,
                 groupedMatches: data.grouped_matches,
@@ -519,10 +548,7 @@ const SearchContent: React.FC = () => {
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content:
-          results.length > 0
-            ? `Found ${results.length} matches for your search.`
-            : "Sorry, I couldn't find any matches.",
+        content: results.length > 0 ? `` : "Sorry, I couldn't find any matches.",
         timestamp: new Date(),
         searchResults: results,
         totalMatches: data.total_matches,
@@ -580,18 +606,25 @@ const SearchContent: React.FC = () => {
         >
           <Box
             sx={{
-              width: 64,
-              height: 64,
-              borderRadius: 3,
+              width: 70,
+              height: 70,
+              borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: 6
+              background: 'linear-gradient(145deg, #e0f0ff, #ffffff)',
+              border: '2px solid #5b8ec4',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+              backdropFilter: 'blur(4px)',
+              animation: 'pulse 1.5s infinite',
+              '@keyframes pulse': {
+                '0%': { transform: 'scale(1)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' },
+                '50%': { transform: 'scale(1.1)', boxShadow: '0 12px 25px rgba(0,0,0,0.15)' },
+                '100%': { transform: 'scale(1)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }
+              }
             }}
           >
-            <CircularProgress size={34} sx={{ color: '#5b8ec4' }} />
+            <TypingDots />
           </Box>
         </Box>
       )}
@@ -649,36 +682,38 @@ const SearchContent: React.FC = () => {
               </Avatar>
 
               <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '100%' }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    borderRadius: '12px',
-                    backgroundColor: message.type === 'user' ? 'primary.light' : 'background.paper',
-                    color: message.type === 'user' ? 'primary.contrastText' : 'text.primary',
-                    maxWidth: '100%'
-                  }}
-                >
-                  {message.image && (
-                    <Box
-                      component="img"
-                      src={message.image}
-                      alt="User upload"
-                      sx={{
-                        maxWidth: '100%',
-                        maxHeight: '200px',
-                        borderRadius: '8px',
-                        mb: message.content ? 1 : 0,
-                        display: 'block'
-                      }}
-                    />
-                  )}
-                  {message.content && (
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                      {message.content}
-                    </Typography>
-                  )}
-                </Paper>
+                {(message.content || message.image) && (
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      borderRadius: '12px',
+                      backgroundColor: message.type === 'user' ? 'primary.light' : 'background.paper',
+                      color: message.type === 'user' ? 'primary.contrastText' : 'text.primary',
+                      maxWidth: '100%'
+                    }}
+                  >
+                    {message.image && (
+                      <Box
+                        component="img"
+                        src={message.image}
+                        alt="User upload"
+                        sx={{
+                          maxWidth: '100%',
+                          maxHeight: '200px',
+                          borderRadius: '8px',
+                          mb: message.content ? 1 : 0,
+                          display: 'block'
+                        }}
+                      />
+                    )}
+                    {message.content && (
+                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {message.content}
+                      </Typography>
+                    )}
+                  </Paper>
+                )}
 
                 {message.searchResults && message.searchResults.length > 0 && (
                   <Box sx={{ mt: 1, width: '100%' }}>

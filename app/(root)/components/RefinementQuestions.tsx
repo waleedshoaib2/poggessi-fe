@@ -128,10 +128,32 @@ export default function RefinementQuestions({
                 sx={{
                   flexWrap: 'wrap',
                   gap: 1,
+
                   '& .MuiToggleButtonGroup-grouped': {
                     border: '1px solid #91A3B8 !important',
                     borderRadius: '999px !important',
                     px: 1.5
+                  },
+
+                  '& .MuiToggleButton-root': {
+                    textTransform: 'none',
+                    transition: 'all 0.2s ease',
+                    opacity: 0.85,
+
+                    '&:hover': {
+                      opacity: 1,
+                      backgroundColor: 'rgba(15,20,25,0.05)'
+                    },
+
+                    '&.Mui-selected': {
+                      backgroundColor: '#0f1419',
+                      color: '#fff',
+                      borderColor: '#0f1419',
+
+                      '&:hover': {
+                        backgroundColor: '#0f1419'
+                      }
+                    }
                   }
                 }}
               >
