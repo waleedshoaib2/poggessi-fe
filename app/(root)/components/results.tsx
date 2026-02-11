@@ -63,17 +63,37 @@ const renderSearchResults = (
   return (
     <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
       {selectedProducts.length > 0 && (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-          <Tooltip title="Download">
-            <IconButton
-              color="inherit"
-              aria-label="settings"
-              sx={{ color: 'white', backgroundColor: 'primary.main' }}
-              onClick={handleExport}
-            >
-              <Download />
-            </IconButton>
-          </Tooltip>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 2,
+            py: 1.5,
+            borderRadius: 3,
+            bgcolor: '#f0f6ff',
+            border: '1px solid #d0e3ff',
+            mb: 2
+          }}
+        >
+          <Typography sx={{ fontWeight: 600, color: '#1e3a8a' }}>
+            {selectedProducts.length} item{selectedProducts.length > 1 ? 's' : ''} selected
+          </Typography>
+
+          <IconButton
+            onClick={handleExport}
+            sx={{
+              bgcolor: '#5b8ec4',
+              color: '#fff',
+              px: 2,
+              borderRadius: 3,
+              '&:hover': {
+                bgcolor: '#4a7ab0'
+              }
+            }}
+          >
+            <Download />
+          </IconButton>
         </Box>
       )}
 
