@@ -356,6 +356,7 @@ const SearchContent: React.FC = () => {
         accept: 'application/json'
       }
       const params = new URLSearchParams()
+
       if (text) params.set('text', text)
       params.set('top_k', (topK || 3).toString())
       params.set('conf_t', (confT || 0.3).toString())
